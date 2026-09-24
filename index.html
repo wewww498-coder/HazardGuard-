@@ -12,13 +12,13 @@ body:before{content:"";position:fixed;inset:0;z-index:-1;opacity:.35;background-
 .nav{height:70px;display:flex;align-items:center;justify-content:space-between}.brand{font-weight:800;font-size:15px}.brand b{color:var(--cyan)}
 nav a{color:#b7c4d6;text-decoration:none;margin-left:22px;font-size:13px}nav a:hover{color:#fff}
 .lang{border:1px solid #34516e;background:#0b1728;color:#fff;border-radius:9px;padding:8px 12px;cursor:pointer;font-weight:800}
-.hero{padding:90px 0 75px}.heroGrid{display:grid;grid-template-columns:1.05fr .95fr;gap:55px;align-items:center}
+.hero{padding:72px 0 70px}.heroGrid{display:flex;flex-direction:column;align-items:center;gap:28px;text-align:center}.heroCopy{max-width:900px}
 .badge{display:inline-block;border:1px solid #31506e;border-radius:999px;padding:7px 14px;color:var(--cyan);font-size:13px;background:#0c192a}
 h1{font-size:clamp(38px,5vw,58px);line-height:1.12;margin:18px 0;letter-spacing:-.8px}h1 span{color:var(--cyan)}
-.hero h2{font-size:clamp(20px,2.2vw,24px);line-height:1.55;margin-bottom:15px}.hero p{color:var(--muted);font-size:16px;line-height:1.85;max-width:700px}
-.actions{display:flex;gap:12px;margin-top:28px;flex-wrap:wrap}.btn{padding:12px 18px;border-radius:10px;border:1px solid #34516e;color:#fff;background:#0d192b;text-decoration:none;font-weight:800}.primary{background:var(--cyan);color:#04111b;border-color:var(--cyan)}
-.visual{height:470px;border:1px solid #294563;border-radius:26px;background:linear-gradient(145deg,#10233a,#08111e);position:relative;overflow:hidden;box-shadow:0 30px 90px #0008}
-.visual:before{content:"";position:absolute;width:330px;height:330px;border:1px solid #61ddff33;border-radius:50%;left:50%;top:50%;transform:translate(-50%,-50%);box-shadow:0 0 80px #61ddff12}
+.hero h2{font-size:clamp(20px,2.2vw,24px);line-height:1.55;margin-bottom:15px}.hero p{color:var(--muted);font-size:16px;line-height:1.85;max-width:760px;margin:auto}
+.actions{display:flex;justify-content:center;gap:12px;margin-top:24px;flex-wrap:wrap}.btn{padding:12px 18px;border-radius:10px;border:1px solid #34516e;color:#fff;background:#0d192b;text-decoration:none;font-weight:800}.primary{background:var(--cyan);color:#04111b;border-color:var(--cyan)}
+.visual{width:min(980px,100%);height:390px;border:1px solid #294563;border-radius:26px;background:linear-gradient(145deg,#10233a,#08111e);position:relative;overflow:hidden;box-shadow:0 30px 90px #0008}
+.heroProblem{width:min(900px,100%);padding:20px 24px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(145deg,#0d1b2d,#091421);text-align:left;box-shadow:0 18px 50px #0004}.heroProblemTitle{display:flex;align-items:center;gap:12px;margin-bottom:8px}.heroProblemTitle strong{font-size:20px;line-height:1.4}.heroProblem p{max-width:none;font-size:15px;line-height:1.8}.visual:before{content:"";position:absolute;width:330px;height:330px;border:1px solid #61ddff33;border-radius:50%;left:50%;top:50%;transform:translate(-50%,-50%);box-shadow:0 0 80px #61ddff12}
 .station{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:145px;height:145px;border:2px solid var(--cyan);border-radius:25px;background:#10283d;display:grid;place-items:center;text-align:center;box-shadow:0 0 45px #61ddff25}.station div{font-size:45px}.station small{color:var(--cyan);font-weight:900}
 .node{position:absolute;background:#0b1728;border:1px solid #34516e;border-radius:10px;padding:9px 12px;font-size:12px}.n1{top:14%;right:8%}.n2{bottom:17%;right:7%}.n3{bottom:11%;left:8%}.n4{top:16%;left:7%}
 section{padding:78px 0}.head{text-align:center;max-width:820px;margin:0 auto 35px}.kicker{color:var(--cyan);font-size:12px;font-weight:900;letter-spacing:1px}.head h2{font-size:clamp(28px,3vw,34px);line-height:1.3;margin:7px 0}.head p{color:var(--muted);font-size:15px;line-height:1.8}
@@ -31,9 +31,9 @@ section{padding:78px 0}.head{text-align:center;max-width:820px;margin:0 auto 35p
 .mediaGrid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.media{background:#07101c;border:1px solid var(--line);border-radius:18px;padding:10px;display:flex;justify-content:center;min-height:250px}.media img,.media video{max-width:100%;max-height:380px;object-fit:contain;border-radius:12px}
 .sources{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.source{background:#0b1727;border:1px solid var(--line);border-radius:16px;padding:19px}.source h3{font-size:16px}.source p{color:var(--muted);font-size:13px;margin:6px 0}.source a{color:var(--cyan);text-decoration:none;font-size:13px}
 footer{text-align:center;border-top:1px solid var(--line);padding:40px;color:#8fa1b8;background:#040914}footer strong{color:#fff}
-[dir=rtl] nav a{margin-left:0;margin-right:22px}[dir=rtl] .alert{border-right:0;border-left:4px solid #ff6d7e}
-@media(max-width:900px){.heroGrid,.problem,.dash{grid-template-columns:1fr}.steps{grid-template-columns:repeat(2,1fr)}.cards,.sources{grid-template-columns:1fr}.mediaGrid{grid-template-columns:1fr}.visual{height:390px}}
-@media(max-width:560px){.steps{grid-template-columns:1fr}nav a{display:none}.hero{padding-top:55px}h1{font-size:38px;letter-spacing:-.4px}.hero h2{font-size:19px}.hero p{font-size:15px}.head h2{font-size:27px}}
+[dir=rtl] nav a{margin-left:0;margin-right:22px}[dir=rtl] .heroProblem{text-align:right}[dir=rtl] .alert{border-right:0;border-left:4px solid #ff6d7e}
+@media(max-width:900px){.problem,.dash{grid-template-columns:1fr}.steps{grid-template-columns:repeat(2,1fr)}.cards,.sources{grid-template-columns:1fr}.mediaGrid{grid-template-columns:1fr}.visual{height:390px}}
+@media(max-width:560px){.heroProblem{padding:17px}.heroProblemTitle{align-items:flex-start;flex-direction:column;gap:4px}.heroProblemTitle strong{font-size:18px}.visual{height:330px}.steps{grid-template-columns:1fr}nav a{display:none}.hero{padding-top:55px}h1{font-size:38px;letter-spacing:-.4px}.hero h2{font-size:19px}.hero p{font-size:15px}.head h2{font-size:27px}}
 </style>
 </head>
 <body>
@@ -44,7 +44,12 @@ footer{text-align:center;border-top:1px solid var(--line);padding:40px;color:#8f
 <h1>Hazard<span>Guard</span><br>Drone Network</h1>
 <h2 data-ar="من وصول الدرون إلى بنية ذكية وآمنة للاستلام داخل الحي." data-en="From drone arrival to a smart, controlled neighborhood pickup point.">From drone arrival to a smart, controlled neighborhood pickup point.</h2>
 <p data-ar="المشروع يقترح شبكة محطات ذكية تستقبل شحنات الدرون، تدير الحجرات، تربط الشحنة بالمستلم، وتوثق عملية الاستلام من الوصول حتى التسليم." data-en="The project proposes a network of smart stations that receive drone packages, manage compartments, link each package to its recipient, and record the process from arrival to pickup.">The project proposes a network of smart stations that receive drone packages, manage compartments, link each package to its recipient, and record the process from arrival to pickup.</p>
-<div class="actions"><a class="btn primary" href="#problem" data-ar="لماذا المشكلة حقيقية؟" data-en="Why is this a real problem?">Why is this a real problem?</a><a class="btn" href="#solution" data-ar="الحل المقترح" data-en="Proposed solution">Proposed solution</a></div></div>
+<div class="actions"><a class="btn primary" href="#problem" data-ar="تفاصيل المشكلة" data-en="Problem details">Problem details</a><a class="btn" href="#solution" data-ar="الحل المقترح" data-en="Proposed solution">Proposed solution</a></div>
+<div class="heroProblem">
+  <div class="heroProblemTitle"><span class="kicker">01 · THE REAL PROBLEM</span><strong data-ar="المشكلة الواقعية" data-en="The real problem">The real problem</strong></div>
+  <p data-ar="حجم التوصيل في السعودية يتزايد، وتجارب توصيل الطرود بالدرون بدأت فعليًا. لكن وصول الشحنة إلى الحي لا يحل وحده مشكلة نقطة الاستلام: أين توضع الشحنة؟ كيف تُدار مدتها؟ وكيف يتحقق النظام من المستلم ويسجل العملية؟" data-en="Saudi delivery volume is growing, and drone parcel-delivery trials are already taking place. But bringing a package to a neighborhood does not by itself solve the pickup point: where is it placed, how long does it remain there, and how does the system verify and record the pickup?">Saudi delivery volume is growing, and drone parcel-delivery trials are already taking place. But bringing a package to a neighborhood does not by itself solve the pickup point: where is it placed, how long does it remain there, and how does the system verify and record the pickup?</p>
+</div>
+</div>
 <div class="visual"><div class="station"><div>🏢</div><small>SMART STATION</small></div><div class="node n1">🚁 Drone Arrival</div><div class="node n2">🔐 OTP</div><div class="node n3">📦 Package Control</div><div class="node n4">🌡️ Chamber Status</div></div>
 </div></header>
 
