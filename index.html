@@ -3,369 +3,332 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HazardGuard Drone Network | Smart Neighborhood Delivery Stations</title>
+<title>HazardGuard | Smart Drone Delivery Station Network</title>
 <style>
 :root{
-  --bg:#08111f; --card:#111b2e; --card2:#17243b; --text:#f4f7fb;
-  --muted:#b8c4d6; --line:#2a3b58; --accent:#67d7ff; --accent2:#9b7cff;
+ --bg:#050914;--panel:#0b1221;--panel2:#101a2e;--line:#1d2d49;
+ --text:#f7fbff;--muted:#9eafc7;--cyan:#54dcff;--violet:#9b7cff;
+ --danger:#ff6b7a;--green:#5ff0bd;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{
-  font-family:Arial,"Tahoma",sans-serif;
-  background:linear-gradient(180deg,#08111f 0%,#0b1526 48%,#070d18 100%);
-  color:var(--text);line-height:1.75;
+ font-family:"Segoe UI",Tahoma,Arial,sans-serif;color:var(--text);line-height:1.75;
+ background:
+ radial-gradient(circle at 50% -10%,rgba(67,113,200,.24),transparent 35%),
+ radial-gradient(circle at 90% 40%,rgba(126,76,220,.11),transparent 30%),
+ #050914;
+ overflow-x:hidden;
 }
-.container{width:min(1120px,92%);margin:auto}
+body:before{
+ content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.55;
+ background-image:
+ radial-gradient(circle,#fff 0 1px,transparent 1.4px),
+ radial-gradient(circle,#54dcff 0 1px,transparent 1.5px),
+ radial-gradient(circle,#9b7cff 0 1px,transparent 1.5px);
+ background-size:180px 180px,290px 290px,410px 410px;
+ background-position:20px 30px,80px 100px,150px 40px;
+}
+.container{width:min(1180px,92%);margin:auto}
 nav{
-  position:sticky;top:0;z-index:10;background:rgba(8,17,31,.94);
-  backdrop-filter:blur(12px);border-bottom:1px solid var(--line)
+ position:sticky;top:0;z-index:20;background:rgba(5,9,20,.82);
+ backdrop-filter:blur(18px);border-bottom:1px solid rgba(84,220,255,.12)
 }
-.nav-inner{display:flex;justify-content:space-between;align-items:center;padding:16px 0}
-.logo{font-weight:800;letter-spacing:.3px}
-.logo span{color:var(--accent)}
-nav a{color:var(--muted);text-decoration:none;margin-right:22px;font-size:14px}
-nav a:hover{color:var(--text)}
-.hero{padding:88px 0 70px;text-align:center}
-.badge{
-  display:inline-block;padding:7px 15px;border:1px solid #3a5275;border-radius:999px;
-  color:var(--accent);background:#111c30;font-size:13px;margin-bottom:20px
+.nav{height:70px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-weight:900;letter-spacing:.4px}.logo b{color:var(--cyan)}
+nav a{color:#b9c7da;text-decoration:none;margin-right:24px;font-size:14px}
+nav a:hover{color:#fff}
+.hero{min-height:720px;display:flex;align-items:center;padding:70px 0;position:relative}
+.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:55px;align-items:center}
+.eyebrow{
+ display:inline-flex;align-items:center;gap:9px;padding:8px 14px;border:1px solid #27405f;
+ background:rgba(10,22,40,.7);border-radius:999px;color:var(--cyan);font-size:13px
 }
-h1{font-size:clamp(40px,7vw,72px);line-height:1.08;margin-bottom:15px}
-h1 span{color:var(--accent)}
-.subtitle{font-size:clamp(19px,2.5vw,27px);color:#dcebe8;margin-bottom:22px}
-.hero p{max-width:820px;margin:auto;color:var(--muted);font-size:17px}
-.btns{margin-top:30px;display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 15px var(--green)}
+h1{font-size:clamp(46px,6.5vw,82px);line-height:1.02;margin:20px 0}
+h1 span{color:var(--cyan);text-shadow:0 0 30px rgba(84,220,255,.2)}
+.hero h2{font-size:25px;line-height:1.5;color:#dce9f8;margin-bottom:18px}
+.hero p{font-size:17px;color:var(--muted);max-width:700px}
+.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}
 .btn{
-  display:inline-block;padding:12px 20px;border-radius:10px;text-decoration:none;font-weight:700;
-  border:1px solid var(--line);color:var(--text);background:var(--card)
+ display:inline-flex;align-items:center;justify-content:center;padding:12px 19px;border-radius:11px;
+ text-decoration:none;font-weight:800;border:1px solid #29415f;color:#fff;background:#0c1729
 }
-.btn.primary{background:var(--accent);color:#071525;border-color:var(--accent)}
-section{padding:64px 0}
-.section-title{text-align:center;margin-bottom:35px}
-.section-title h2{font-size:34px;margin-bottom:8px}
-.section-title p{color:var(--muted)}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
-.card{
-  background:linear-gradient(145deg,var(--card),#0c1628);border:1px solid var(--line);
-  border-radius:18px;padding:25px;box-shadow:0 14px 40px rgba(0,0,0,.18)
+.btn.primary{color:#03111b;background:var(--cyan);border-color:var(--cyan)}
+.btn:hover{transform:translateY(-2px)}
+.hero-card{
+ min-height:500px;border:1px solid #233b5b;border-radius:28px;
+ background:linear-gradient(145deg,rgba(15,28,49,.95),rgba(6,13,25,.9));
+ box-shadow:0 35px 100px rgba(0,0,0,.45),0 0 70px rgba(84,220,255,.06);
+ padding:25px;position:relative;overflow:hidden
 }
-.card h3{margin-bottom:9px}.card p{color:var(--muted)}
-.problem{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:stretch}
-.highlight{
-  border-right:4px solid var(--accent);padding:25px;background:#0d192c;border-radius:12px
+.hero-card:before{
+ content:"";position:absolute;width:430px;height:430px;border-radius:50%;left:50%;top:35%;
+ transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(84,220,255,.14),transparent 68%)
 }
-.highlight strong{color:var(--accent)}
-.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
-.step{text-align:center;padding:22px 15px;background:var(--card);border:1px solid var(--line);border-radius:16px}
-.num{font-size:13px;color:var(--accent);font-weight:800}
-.step h3{margin:8px 0}.step p{font-size:14px;color:var(--muted)}
-.flow{
-  display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap;margin-top:25px
+.orbit{position:absolute;border:1px solid rgba(84,220,255,.22);border-radius:50%;left:50%;top:42%;transform:translate(-50%,-50%)}
+.orbit.one{width:310px;height:310px}.orbit.two{width:430px;height:190px;transform:translate(-50%,-50%) rotate(-18deg)}
+.station{
+ position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);
+ width:145px;height:145px;border:2px solid var(--cyan);border-radius:28px;
+ background:linear-gradient(145deg,#122b43,#08111e);display:flex;flex-direction:column;
+ align-items:center;justify-content:center;box-shadow:0 0 45px rgba(84,220,255,.18)
 }
-.flow span{padding:10px 14px;border-radius:10px;background:#121f35;border:1px solid #354d70;font-size:14px}
-.arrow{color:var(--accent);font-weight:800}
-.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:16px}
-table{width:100%;border-collapse:collapse;min-width:650px}
-th,td{padding:15px;text-align:right;border-bottom:1px solid var(--line)}
-th{background:#17243b;color:var(--accent)}
-td{color:var(--muted)}
-.media{
-  border:1px solid var(--line);border-radius:18px;min-height:280px;display:flex;
-  align-items:center;justify-content:center;text-align:center;background:#091322;overflow:hidden
+.station .icon{font-size:48px}.station strong{font-size:14px;color:var(--cyan)}
+.node{position:absolute;padding:9px 12px;border:1px solid #2a4565;background:#0b1628;border-radius:10px;font-size:12px;color:#dce9f8}
+.n1{top:13%;right:8%}.n2{bottom:18%;right:4%}.n3{bottom:10%;left:8%}.n4{top:17%;left:7%}
+section{padding:92px 0}
+.section-head{max-width:800px;margin:0 auto 40px;text-align:center}
+.section-head .kicker{color:var(--cyan);font-size:13px;font-weight:900;letter-spacing:1px}
+.section-head h2{font-size:38px;margin:8px 0 10px}
+.section-head p{color:var(--muted);font-size:16px}
+.problem-wrap{display:grid;grid-template-columns:1.15fr .85fr;gap:22px}
+.problem-main,.evidence{
+ border:1px solid var(--line);border-radius:22px;background:rgba(10,18,32,.88);padding:30px
 }
-.media img,.media video{width:100%;max-width:100%;height:auto;display:block;border-radius:18px}
-.note{margin-top:15px;color:#9db8b2;font-size:13px;text-align:center}
-footer{border-top:1px solid var(--line);padding:35px 0;text-align:center;color:var(--muted)}
-.disclaimer{font-size:13px;color:#8fa9a3;margin-top:12px}
-@media(max-width:800px){
-  .grid,.problem{grid-template-columns:1fr}
-  .steps{grid-template-columns:repeat(2,1fr)}
-  nav a{display:none}
+.problem-main h3{font-size:26px;margin-bottom:12px}
+.problem-main p{color:#c3cfdf;font-size:17px}
+.callout{
+ margin-top:22px;padding:20px;border-radius:15px;border-right:4px solid var(--danger);
+ background:rgba(255,107,122,.06);color:#dce5f1
 }
-@media(max-width:480px){.steps{grid-template-columns:1fr}}
-
-/* Premium space-tech visual layer */
-body::before{
-  content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;
-  background-image:
-    radial-gradient(circle at 12% 18%,rgba(103,215,255,.75) 0 1px,transparent 1.5px),
-    radial-gradient(circle at 78% 12%,rgba(155,124,255,.8) 0 1px,transparent 1.5px),
-    radial-gradient(circle at 32% 72%,rgba(255,255,255,.7) 0 1px,transparent 1.5px),
-    radial-gradient(circle at 88% 66%,rgba(103,215,255,.65) 0 1px,transparent 1.5px),
-    radial-gradient(circle at 56% 38%,rgba(255,255,255,.5) 0 1px,transparent 1.5px);
-  background-size:240px 240px,310px 310px,190px 190px,270px 270px,360px 360px;
-  opacity:.55;
+.callout b{color:#ff8793}
+.evidence{display:grid;gap:12px}
+.evidence-title{font-weight:900;color:#fff;margin-bottom:4px}
+.metric{
+ padding:18px;border:1px solid #203650;border-radius:15px;background:#0c1729
 }
-body::after{
-  content:"";position:fixed;inset:0;pointer-events:none;z-index:-2;
-  background:
-    radial-gradient(ellipse at 50% 0%,rgba(43,89,150,.25),transparent 45%),
-    radial-gradient(ellipse at 100% 45%,rgba(105,70,180,.13),transparent 38%);
+.metric strong{display:block;font-size:30px;color:var(--cyan);line-height:1.1}
+.metric span{font-size:13px;color:var(--muted)}
+.metric small{display:block;color:#7f91aa;margin-top:5px}
+.real-problem{
+ margin-top:22px;display:grid;grid-template-columns:repeat(3,1fr);gap:16px
 }
-.hero{position:relative;overflow:hidden;padding:105px 0 85px}
-.hero::before{
-  content:"";position:absolute;width:620px;height:620px;left:50%;top:-300px;
-  transform:translateX(-50%);border-radius:50%;
-  background:radial-gradient(circle,rgba(103,215,255,.10),transparent 68%);
-  pointer-events:none;
+.issue{
+ border:1px solid var(--line);background:linear-gradient(145deg,#0c1729,#080f1c);
+ padding:22px;border-radius:18px
 }
-.hero .container{position:relative}
-.logo{font-size:16px}
-.badge{box-shadow:0 0 25px rgba(103,215,255,.08)}
-h1{letter-spacing:-1.5px;text-shadow:0 0 35px rgba(103,215,255,.10)}
-.card,.step,.media,.table-wrap{
-  box-shadow:0 18px 50px rgba(0,0,0,.20),inset 0 1px 0 rgba(255,255,255,.025);
+.issue .tag{font-size:11px;color:var(--cyan);font-weight:900}.issue h3{margin:8px 0}.issue p{color:var(--muted);font-size:14px}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:15px}
+.step{
+ padding:22px;border:1px solid var(--line);background:#0a1425;border-radius:18px;min-height:190px
 }
-.card:hover,.step:hover{
-  transform:translateY(-3px);border-color:#426084;transition:.25s ease;
+.num{font-size:12px;color:var(--cyan);font-weight:900}.step h3{margin:9px 0 6px}.step p{font-size:14px;color:var(--muted)}
+.flow{margin-top:25px;padding:20px;border:1px solid var(--line);border-radius:18px;background:#08111f;text-align:center}
+.flow-line{display:flex;align-items:center;justify-content:center;gap:9px;flex-wrap:wrap}
+.flow span{padding:10px 13px;border:1px solid #29415f;border-radius:9px;background:#0e1b30;font-size:13px}
+.flow b{color:var(--cyan)}
+.innovation{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.inno{border:1px solid #263c5b;border-radius:20px;padding:25px;background:linear-gradient(145deg,#101b2e,#09111f)}
+.inno .icon{font-size:27px}.inno h3{margin:10px 0}.inno p{color:var(--muted);font-size:14px}
+.dashboard{
+ border:1px solid #2a4364;border-radius:24px;background:#07101e;padding:20px;
+ box-shadow:0 25px 80px rgba(0,0,0,.35)
 }
-.section-title h2{letter-spacing:-.4px}
-.media{
-  width:min(760px,100%);min-height:0;margin-left:auto;margin-right:auto;
-  padding:10px;background:rgba(9,19,34,.82);
+.dash-top{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:15px}
+.status{color:var(--green);font-size:13px}.dash-title{font-weight:900}
+.mock{
+ display:grid;grid-template-columns:1.1fr .9fr;gap:14px
 }
-.media img,.media video{max-height:420px;object-fit:contain;background:#060d17}
-.prototype-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start}
-.source-card .btn{margin-top:14px;font-size:13px;padding:8px 13px}
-footer{background:rgba(6,12,22,.35)}
-@media(max-width:800px){.prototype-grid{grid-template-columns:1fr}.media{width:100%}}
+.mock-map,.mock-side{border:1px solid #1e3450;border-radius:16px;background:#0a1526;padding:18px}
+.mock-map{min-height:310px;position:relative;overflow:hidden}
+.grid-bg{
+ position:absolute;inset:0;opacity:.22;
+ background-image:linear-gradient(#38506b 1px,transparent 1px),linear-gradient(90deg,#38506b 1px,transparent 1px);
+ background-size:36px 36px
+}
+.map-station{position:absolute;left:48%;top:43%;padding:18px;border:2px solid var(--cyan);border-radius:18px;background:#0d2238;z-index:2}
+.route{position:absolute;height:2px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);transform-origin:left;z-index:1}
+.r1{width:180px;left:18%;top:27%;transform:rotate(20deg)}.r2{width:150px;left:55%;top:63%;transform:rotate(-35deg)}
+.side-row{padding:14px 0;border-bottom:1px solid #1b2c43}.side-row:last-child{border-bottom:0}.side-row small{color:#7387a1}.side-row strong{display:block}
+.prototype-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.media{border:1px solid var(--line);border-radius:20px;background:#070e1a;padding:10px;overflow:hidden;min-height:280px;display:flex;align-items:center;justify-content:center}
+.media img,.media video{width:100%;max-height:390px;object-fit:contain;border-radius:14px}
+.note{margin-top:12px;text-align:center;color:#778ba5;font-size:12px}
+.sources{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.source{border:1px solid var(--line);border-radius:18px;background:#0a1424;padding:21px}
+.source h3{font-size:16px}.source p{font-size:13px;color:var(--muted);margin:7px 0 12px}.source a{color:var(--cyan);font-size:13px;text-decoration:none}
+footer{padding:45px 0;border-top:1px solid var(--line);text-align:center;color:#8ea0b8;background:#040812}
+footer strong{color:#fff}.disclaimer{font-size:12px;margin-top:8px}
+@media(max-width:900px){
+ .hero-grid,.problem-wrap,.mock{grid-template-columns:1fr}.hero{min-height:auto}
+ .steps{grid-template-columns:repeat(2,1fr)}.real-problem,.innovation,.sources{grid-template-columns:1fr}
+ .prototype-grid{grid-template-columns:1fr}.hero-card{min-height:430px}
+}
+@media(max-width:520px){
+ .steps{grid-template-columns:1fr}nav a{display:none}.hero-card{min-height:390px}
+ .station{width:120px;height:120px}.orbit.one{width:260px;height:260px}.orbit.two{width:340px;height:160px}
+}
 </style>
 </head>
 <body>
-
 <nav>
-  <div class="container nav-inner">
-    <div class="logo">Hazard<span>Guard</span> Drone Network</div>
-    <div>
-      <a href="#overview">الفكرة</a>
-      <a href="#how">آلية العمل</a>
-      <a href="#innovation">الابتكار</a>
-      <a href="#prototype">النموذج</a>
-      <a href="#sources">المصادر</a>
-    </div>
+ <div class="container nav">
+  <div class="logo">Hazard<b>Guard</b> <span>Drone Network</span></div>
+  <div>
+   <a href="#problem">المشكلة</a><a href="#solution">الحل</a><a href="#how">الآلية</a><a href="#prototype">النموذج</a><a href="#sources">المصادر</a>
   </div>
+ </div>
 </nav>
 
 <header class="hero">
-  <div class="container">
-    <div class="badge">🇸🇦 Saudi Arabia · Student Innovation</div>
-    <h1>Hazard<span>Guard</span> Drone Network</h1>
-    <div class="subtitle">شبكة محطات ذكية لاستقبال وإدارة شحنات الدرون داخل الأحياء</div>
-    <p>
-      نظام مقترح يربط طائرات التوصيل بدون طيار بمحطات ذكية موزعة داخل الأحياء.
-      تستقبل المحطة الشحنة، وتحدد نوعها، وتختار الحجرة المناسبة، وتراقب حالتها ومدة بقائها،
-      ثم تتيح الاستلام الآمن للمستلم بعد التحقق من رمز سري لمرة واحدة.
-    </p>
-    <div class="btns">
-      <a class="btn primary" href="#how">شاهد آلية العمل</a>
-      <a class="btn" href="#innovation">ما الجانب الابتكاري؟</a>
-    </div>
+ <div class="container hero-grid">
+  <div>
+   <div class="eyebrow"><i class="dot"></i> Saudi Student Innovation · Smart Logistics</div>
+   <h1>Hazard<span>Guard</span><br>Drone Network</h1>
+   <h2>من نقطة هبوط للدرون إلى <span style="color:var(--cyan)">بنية ذكية للاستلام</span> داخل الحي.</h2>
+   <p>
+    المشكلة ليست في طيران الدرون فقط. المشكلة تبدأ عندما تصل الشحنة إلى الحي:
+    أين تهبط؟ أين تحفظ؟ كيف تُسلَّم للمستفيد الصحيح؟ وكيف نعرف أن الشحنة لم تبقَ
+    في نقطة التسليم دون إدارة واضحة؟
+   </p>
+   <div class="actions">
+    <a class="btn primary" href="#problem">لماذا هذه مشكلة حقيقية؟</a>
+    <a class="btn" href="#solution">شاهد الحل المقترح</a>
+   </div>
   </div>
+  <div class="hero-card" aria-label="محاكاة بصرية للمحطة">
+   <div class="orbit one"></div><div class="orbit two"></div>
+   <div class="station"><div class="icon">🏢</div><strong>SMART STATION</strong></div>
+   <div class="node n1">🚁 وصول الدرون</div><div class="node n2">🔐 OTP</div>
+   <div class="node n3">📦 إدارة الشحنة</div><div class="node n4">🌡️ حالة الحجرة</div>
+  </div>
+ </div>
 </header>
 
-<section id="overview">
-  <div class="container">
-    <div class="section-title">
-      <h2>فكرة المشروع</h2>
-      <p>تحويل نقطة وصول الدرون إلى محطة ذكية تدير الشحنة والاستلام كعملية واحدة.</p>
+<section id="problem">
+ <div class="container">
+  <div class="section-head"><div class="kicker">01 · THE REAL PROBLEM</div><h2>المشكلة موجودة فعلًا — وليست مشكلة اخترعناها للمشروع</h2>
+  <p>السوق السعودي يشهد نموًا كبيرًا في التوصيل، وفي الوقت نفسه بدأت تجارب توصيل الطرود بالدرون. هذا يخلق سؤالًا عمليًا جديدًا: ماذا يحدث عند وصول الدرون إلى الحي؟</p></div>
+
+  <div class="problem-wrap">
+   <div class="problem-main">
+    <h3>الفجوة التي يستهدفها المشروع</h3>
+    <p>
+     في 2025 سجل قطاع توصيل الطلبات في المملكة أكثر من <b style="color:#fff">101 مليون طلب خلال الربع الثاني وحده</b>،
+     وكانت منطقة الرياض وحدها أكثر من <b style="color:#fff">45.68 مليون طلب</b>. وفي سبتمبر 2025 أُجريت في جدة تجربة رسمية
+     لتوصيل الطرود باستخدام الدرون. هذه التطورات تعني أن التحدي لم يعد «هل يمكن للدرون أن يحمل طردًا؟»،
+     بل كيف يمكن تنظيم <b style="color:var(--cyan)">نقطة الاستلام الأخيرة</b> عندما تصل هذه التقنية إلى الأحياء.
+    </p>
+    <div class="callout">
+     <b>المشكلة التشغيلية:</b> نقطة التسليم تحتاج إلى مكان محدد، وإدارة للحجرة، وربط الشحنة بالمستلم،
+     والتحقق قبل الفتح، وسجل يوضح وصول الشحنة واستلامها ومدة بقائها.
     </div>
-    <div class="problem">
-      <div class="card">
-        <h3>المشكلة</h3>
-        <p>
-          توصيل الشحنات بالدرون يحتاج إلى نقطة استلام منظمة، خصوصًا عندما تكون الشحنة
-          حساسة للحرارة أو تحتاج إلى حجرة مخصصة أو تحقق من هوية المستلم.
-          الاعتماد على نقطة تسليم واحدة أو تسليم مباشر لا يوفر دائمًا إدارة موحدة
-          لحالة الشحنة ووقت بقائها وآلية الاستلام.
-        </p>
-      </div>
-      <div class="highlight">
-        <strong>الحل المقترح</strong><br>
-        إنشاء شبكة من المحطات الذكية داخل الأحياء، بحيث تصبح المحطة حلقة وصل بين
-        الدرون والشحنة والمستلم، مع إدارة رقمية لكل عملية استلام.
-      </div>
-    </div>
+   </div>
+   <div class="evidence">
+    <div class="evidence-title">أرقام ووقائع موثقة</div>
+    <div class="metric"><strong>101+ مليون</strong><span>طلب توصيل في المملكة خلال الربع الثاني 2025</span><small>هيئة النقل عبر واس</small></div>
+    <div class="metric"><strong>45.68 مليون</strong><span>طلب في منطقة الرياض خلال الربع الثاني 2025</span><small>نحو 45% من إجمالي الطلبات</small></div>
+    <div class="metric"><strong>2025</strong><span>تجربة رسمية لتوصيل الطرود بالدرون في جدة</span><small>تعاون GACA وTGA</small></div>
+   </div>
   </div>
+
+  <div class="real-problem">
+   <div class="issue"><div class="tag">LAST-METER</div><h3>أين تستلم الشحنة؟</h3><p>الدرون يحتاج نقطة وصول محددة داخل بيئة سكنية بدل ترك مرحلة الاستلام بلا بنية مخصصة.</p></div>
+   <div class="issue"><div class="tag">CONTROL</div><h3>من يفتح الحجرة؟</h3><p>الشحنة تحتاج ربطًا واضحًا بالمستلم والتحقق من الرمز قبل السماح بالاستلام.</p></div>
+   <div class="issue"><div class="tag">TRACEABILITY</div><h3>ماذا حدث للشحنة؟</h3><p>نحتاج سجلًا يوضح الوصول، الحجرة، الحالة، مدة البقاء ووقت الاستلام.</p></div>
+  </div>
+ </div>
+</section>
+
+<section id="solution">
+ <div class="container">
+  <div class="section-head"><div class="kicker">02 · THE PROPOSED SOLUTION</div><h2>الحل: محطة ذكية تكون آخر حلقة بين الدرون والمستلم</h2>
+  <p>بدل أن تكون المحطة مجرد «خزانة»، تصبح نظامًا يدير دورة الشحنة من لحظة وصول الدرون حتى الاستلام.</p></div>
+  <div class="innovation">
+   <div class="inno"><div class="icon">🧠</div><h3>اختيار الحجرة</h3><p>ربط فئة الشحنة بخصائص الحجرة المطلوبة في النموذج، بدل وضع جميع الشحنات في حجيرات متطابقة.</p></div>
+   <div class="inno"><div class="icon">⏱️</div><h3>إدارة مدة البقاء</h3><p>تسجيل وقت الوصول ومدة بقاء الشحنة لإظهار حالة الطلب والتنبيه عند تجاوز المدة المحددة.</p></div>
+   <div class="inno"><div class="icon">🔐</div><h3>استلام متحقق منه</h3><p>فتح الحجرة باستخدام OTP مرتبط بالطلب وتسجيل حدث الاستلام في سجل رقمي.</p></div>
+  </div>
+ </div>
 </section>
 
 <section id="how">
-  <div class="container">
-    <div class="section-title">
-      <h2>كيف يعمل النظام؟</h2>
-      <p>تسلسل العملية من وصول الدرون حتى تسجيل الاستلام.</p>
-    </div>
-
-    <div class="steps">
-      <div class="step"><div class="num">01</div><h3>وصول الدرون</h3><p>يصل الدرون إلى المحطة الذكية المحددة للشحنة.</p></div>
-      <div class="step"><div class="num">02</div><h3>تسجيل الشحنة</h3><p>يتم إنشاء عملية استلام وربط الشحنة بالمستلم.</p></div>
-      <div class="step"><div class="num">03</div><h3>تحديد النوع</h3><p>يحدد النظام فئة الشحنة والاشتراطات المرتبطة بها.</p></div>
-      <div class="step"><div class="num">04</div><h3>اختيار الحجرة</h3><p>يختار النظام الحجرة المناسبة حسب نوع الشحنة وحالتها المطلوبة.</p></div>
-      <div class="step"><div class="num">05</div><h3>مراقبة الحالة</h3><p>تُراقب حالة الحجرة ومدة بقاء الشحنة وفق إعدادات النظام.</p></div>
-      <div class="step"><div class="num">06</div><h3>إشعار المستلم</h3><p>يصل إشعار للمستلم بأن الشحنة أصبحت جاهزة للاستلام.</p></div>
-      <div class="step"><div class="num">07</div><h3>التحقق بـ OTP</h3><p>يدخل المستلم رمزًا سريًا لمرة واحدة للتحقق قبل فتح الحجرة.</p></div>
-      <div class="step"><div class="num">08</div><h3>تسجيل الاستلام</h3><p>تُفتح الحجرة المناسبة ويُسجل وقت الاستلام وحالة العملية.</p></div>
-    </div>
-
-    <div class="flow">
-      <span>🚁 الدرون</span><b class="arrow">←</b>
-      <span>🏢 المحطة الذكية</span><b class="arrow">←</b>
-      <span>🧠 تحليل الشحنة</span><b class="arrow">←</b>
-      <span>🌡️ مراقبة الحالة</span><b class="arrow">←</b>
-      <span>🔐 OTP</span><b class="arrow">←</b>
-      <span>👤 المستلم</span>
-    </div>
+ <div class="container">
+  <div class="section-head"><div class="kicker">03 · SYSTEM FLOW</div><h2>كيف يعمل النظام؟</h2><p>عملية واحدة مترابطة بدل مجموعة نقاط منفصلة.</p></div>
+  <div class="steps">
+   <div class="step"><div class="num">01 / ARRIVAL</div><h3>وصول الدرون</h3><p>تصل الطائرة إلى المحطة المحددة للشحنة وفق سيناريو المحاكاة.</p></div>
+   <div class="step"><div class="num">02 / REGISTER</div><h3>تسجيل الطلب</h3><p>يربط النظام رقم الشحنة بالمستلم ويبدأ سجل العملية.</p></div>
+   <div class="step"><div class="num">03 / CLASSIFY</div><h3>تحديد الفئة</h3><p>تُحدد فئة الشحنة والاشتراطات التي ستستخدم في اختيار الحجرة.</p></div>
+   <div class="step"><div class="num">04 / ASSIGN</div><h3>تخصيص الحجرة</h3><p>يختار النظام حجرة مناسبة ويغير حالتها إلى مشغولة.</p></div>
+   <div class="step"><div class="num">05 / MONITOR</div><h3>مراقبة الحالة</h3><p>يُسجل وقت الوصول ومدة البقاء وحالة الحجرة في النموذج.</p></div>
+   <div class="step"><div class="num">06 / NOTIFY</div><h3>إشعار المستلم</h3><p>يصبح الطلب جاهزًا للاستلام ويُنشأ رمز تحقق لمرة واحدة.</p></div>
+   <div class="step"><div class="num">07 / VERIFY</div><h3>التحقق بـ OTP</h3><p>يُقبل الرمز الصحيح ويُرفض الرمز الخاطئ أو المنتهي في المحاكاة.</p></div>
+   <div class="step"><div class="num">08 / LOG</div><h3>تسجيل الاستلام</h3><p>تُفتح الحجرة ويُحفظ وقت الاستلام وحالة العملية.</p></div>
   </div>
+  <div class="flow"><div class="flow-line">
+   <span>🚁 DRONE</span><b>←</b><span>🏢 STATION</span><b>←</b><span>📦 PACKAGE</span><b>←</b><span>🔐 VERIFY</span><b>←</b><span>👤 RECIPIENT</span>
+  </div></div>
+ </div>
 </section>
 
-<section id="innovation">
-  <div class="container">
-    <div class="section-title">
-      <h2>الجانب الابتكاري</h2>
-      <p>الابتكار هنا في تكامل إدارة الشحنة والاستلام داخل المحطة، وليس في مجرد وجود خزانة.</p>
+<section>
+ <div class="container">
+  <div class="section-head"><div class="kicker">04 · CONTROL DASHBOARD</div><h2>كيف ستظهر المحطة من الداخل؟</h2><p>هذه واجهة تصور للوظائف التي سنحولها إلى نموذج برمجي قابل للاختبار.</p></div>
+  <div class="dashboard">
+   <div class="dash-top"><div class="dash-title">HazardGuard Station · Neighborhood 01</div><div class="status">● SYSTEM READY</div></div>
+   <div class="mock">
+    <div class="mock-map"><div class="grid-bg"></div><div class="route r1"></div><div class="route r2"></div><div class="map-station">🏢<br><small>STATION 01</small></div></div>
+    <div class="mock-side">
+     <div class="side-row"><small>INCOMING PACKAGE</small><strong>HG-2026-0041</strong></div>
+     <div class="side-row"><small>STATUS</small><strong style="color:var(--cyan)">ARRIVED · CHAMBER C-03</strong></div>
+     <div class="side-row"><small>VERIFICATION</small><strong style="color:var(--green)">OTP READY</strong></div>
+     <div class="side-row"><small>DWELL TIME</small><strong>00:18:42</strong></div>
+     <div class="side-row"><small>EVENT LOG</small><strong>Arrival → Assign → Notify</strong></div>
     </div>
-
-    <div class="grid">
-      <div class="card"><h3>تخصيص الحجرة</h3><p>اختيار الحجرة بناءً على فئة الشحنة والاشتراطات المحددة لها بدل استخدام حجرة واحدة لكل الطلبات.</p></div>
-      <div class="card"><h3>إدارة زمن البقاء</h3><p>تسجيل ومراقبة مدة بقاء الشحنة داخل المحطة لإظهار حالة الطلب وتحديد الحاجة إلى إجراء لاحق.</p></div>
-      <div class="card"><h3>استلام متحقق منه</h3><p>ربط فتح الحجرة برمز OTP خاص بالطلب وتسجيل عملية الاستلام بدل الفتح العام.</p></div>
-    </div>
-
-    <div style="height:24px"></div>
-
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr><th>العنصر</th><th>في النموذج المقترح</th><th>القيمة العملية</th></tr>
-        </thead>
-        <tbody>
-          <tr><td>وصول الدرون</td><td>نقطة استقبال مخصصة</td><td>تنظيم انتقال الشحنة من الدرون إلى المحطة</td></tr>
-          <tr><td>نوع الشحنة</td><td>تصنيف وربط باشتراطات التخزين</td><td>اختيار الحجرة المناسبة</td></tr>
-          <tr><td>حالة الشحنة</td><td>مراقبة ووقت بقاء</td><td>تتبع حالة الطلب داخل المحطة</td></tr>
-          <tr><td>المستلم</td><td>OTP خاص بالطلب</td><td>التحقق قبل فتح الحجرة</td></tr>
-          <tr><td>العملية</td><td>سجل استلام رقمي</td><td>إثبات وقت وحالة الاستلام</td></tr>
-        </tbody>
-      </table>
-    </div>
+   </div>
   </div>
+ </div>
 </section>
 
 <section id="prototype">
-  <div class="container">
-    <div class="section-title">
-      <h2>النموذج والمحاكاة الحالية</h2>
-      <p>الموقع سيُحدَّث تدريجيًا ليعرض النموذج البرمجي والاختبارات الفعلية.</p>
-    </div>
-
-    <div class="prototype-grid"><div class="media">
-      <img src="concept.png" alt="HazardGuard Drone Network concept">
-    </div>
-    <div class="media">
-      <video controls poster="concept.png">
-        <source src="simulation.mp4" type="video/mp4">
-        المتصفح لا يدعم تشغيل الفيديو.
-      </video>
-    </div></div>
-
-    <p class="note">
-      ملاحظة: الصورة والفيديو الحاليان من النسخة السابقة وسيتم استبدالهما/تحديثهما
-      عندما نبني محاكاة شبكة المحطات الجديدة.
-    </p>
+ <div class="container">
+  <div class="section-head"><div class="kicker">05 · PROTOTYPE</div><h2>النموذج والمحاكاة</h2><p>المحتوى القديم سيُستبدل تدريجيًا بواجهة ومحاكاة مرتبطة بالنظام الجديد.</p></div>
+  <div class="prototype-grid">
+   <div class="media"><img src="concept.png" alt="HazardGuard concept"></div>
+   <div class="media"><video controls poster="concept.png"><source src="simulation.mp4" type="video/mp4">المتصفح لا يدعم تشغيل الفيديو.</video></div>
   </div>
+  <p class="note">الصورة والفيديو الحاليان موروثان من النسخة السابقة وسيتم تحديثهما عند اكتمال نموذج المحطة الجديد.</p>
+ </div>
 </section>
 
 <section>
-  <div class="container">
-    <div class="section-title">
-      <h2>ما الذي سنختبره؟</h2>
-      <p>هذه هي النتائج التي سنبنيها فعليًا قبل إعداد الملصق العلمي.</p>
-    </div>
-    <div class="grid">
-      <div class="card"><h3>اختيار الحجرة</h3><p>اختبار قدرة النظام على ربط فئة الشحنة بالحجرة المناسبة.</p></div>
-      <div class="card"><h3>التحقق من OTP</h3><p>اختبار قبول الرمز الصحيح ورفض الرمز الخاطئ أو المنتهي.</p></div>
-      <div class="card"><h3>سجل الاستلام</h3><p>اختبار تسجيل وصول الشحنة وفتح الحجرة والاستلام بترتيب زمني واضح.</p></div>
-    </div>
+ <div class="container">
+  <div class="section-head"><div class="kicker">06 · WHAT WE WILL MEASURE</div><h2>النتائج التي سنضعها في الملصق</h2><p>لن نضع أرقامًا تقديرية. كل رقم سيأتي من اختبار فعلي للنموذج.</p></div>
+  <div class="innovation">
+   <div class="inno"><div class="icon">🎯</div><h3>دقة تخصيص الحجرة</h3><p>عدد الحالات الصحيحة مقارنة بإجمالي الحالات المختبرة.</p></div>
+   <div class="inno"><div class="icon">🔑</div><h3>نجاح التحقق</h3><p>اختبار قبول OTP الصحيح ورفض الرمز الخاطئ أو المنتهي.</p></div>
+   <div class="inno"><div class="icon">⚡</div><h3>زمن العملية</h3><p>قياس الزمن من تسجيل الوصول حتى إتاحة الاستلام وتسجيله.</p></div>
   </div>
-</section>
-
-<section>
-  <div class="container">
-    <div class="section-title">
-      <h2>التطوير القادم</h2>
-      <p>من واجهة الفكرة إلى نموذج أولي قابل للاختبار.</p>
-    </div>
-    <div class="card">
-      <p>
-        المرحلة التالية ستتضمن بناء لوحة تحكم للمحطة، محاكاة الحجرات المختلفة،
-        نظام OTP، مؤقت بقاء الشحنة، سجل العمليات، ثم إضافة مكوّن الذكاء الاصطناعي
-        في الجزء الذي يمكن تدريبه واختباره فعليًا. بعد ذلك سنجري اختبارات موثقة
-        ونستخدم نتائجها في الملصق العلمي والفيديو النهائي.
-      </p>
-    </div>
-  </div>
+ </div>
 </section>
 
 <section id="sources">
-  <div class="container">
-    <div class="section-title">
-      <h2>المصادر والأبحاث التي بُني عليها البحث</h2>
-      <p>مراجع رسمية وأبحاث ومشروعات موثقة راجعناها لفهم تطور توصيل الدرون واللوجستيات الذكية في المملكة.</p>
-    </div>
-    <div class="grid">
-      <div class="card source-card">
-        <h3>KAUST — Autonomous Drone Delivery</h3>
-        <p>تجارب لتوصيل الطعام والسلع باستخدام الدرون، مع اختبار محطات Hub في بيئة KAUST.</p>
-        <a class="btn" target="_blank" rel="noopener" href="https://leap.kaust.edu.sa/autonomous-drone-delivery.html">فتح المصدر</a>
-      </div>
-      <div class="card source-card">
-        <h3>FalconViz — Autonomous Delivery</h3>
-        <p>توثيق لأنظمة توصيل ذاتية وتجارب Carpet-to-Carpet وHub-to-Hub مرتبطة ببيئة KAUST والسعودية.</p>
-        <a class="btn" target="_blank" rel="noopener" href="https://falconviz.com/autonomus.html">فتح المصدر</a>
-      </div>
-      <div class="card source-card">
-        <h3>KAUST Research — Safe Drone Delivery</h3>
-        <p>بحث حول تخطيط مسارات آمنة لتوصيل الدرون مع مراعاة مخاطر الأعطال والهبوط الآمن.</p>
-        <a class="btn" target="_blank" rel="noopener" href="https://academia.kaust.edu.sa/en/publications/safe-trajectory-planning-for-safety-critical-drone-delivery">فتح البحث</a>
-      </div>
-      <div class="card source-card">
-        <h3>Saudi Press Agency — Jeddah Trial</h3>
-        <p>خبر رسمي عن تجربة توصيل طرود بالدرون في جدة عام 2025 بالتعاون بين GACA وTGA.</p>
-        <a class="btn" target="_blank" rel="noopener" href="https://www.spa.gov.sa/N2390793">فتح المصدر</a>
-      </div>
-      <div class="card source-card">
-        <h3>GACA — تنظيم الطائرات بدون طيار</h3>
-        <p>المتطلبات التنظيمية والتشغيلية للطائرات بدون طيار في المملكة، ومنها التسجيل والتصاريح.</p>
-        <a class="btn" target="_blank" rel="noopener" href="https://gaca.gov.sa/-/media/Files/PDF/LawsAndRegulation/Aviation-Safety-and-Environmental-Sustainability/Safety-and-Aviation-Standards-Advisory-Circulars/AC-101-01-Small-Unmanned-Aircraft-Systems.pdf">فتح المصدر</a>
-      </div>
-      <div class="card source-card">
-        <h3>رؤية السعودية 2030 — الخدمات اللوجستية</h3>
-        <p>معلومات رسمية عن تطوير البنية اللوجستية والاستثمار في التقنيات الذكية والأتمتة.</p>
-        <a class="btn" target="_blank" rel="noopener" href="https://www.vision2030.gov.sa/media/ecdjfopq/vision2030_annual_report_2025_en.pdf">فتح التقرير</a>
-      </div>
-    </div>
-    <div class="highlight" style="margin-top:24px">
-      <strong>ملاحظة بحثية مهمة:</strong><br>
-      المراجع السابقة تثبت أن المملكة تطور وتختبر تقنيات توصيل الدرون واللوجستيات الذاتية،
-      لذلك لا نذكر في المشروع أن «توصيل الدرون غير موجود في السعودية». نطاق البحث في مشروع
-      HazardGuard يركز على <strong>شبكة محطات ذكية موزعة داخل الأحياء لإدارة الشحنة من وصول
-      الدرون حتى الاستلام، مع تخصيص الحجرة حسب نوع الشحنة، ومراقبة مدة البقاء، والتحقق بـOTP،
-      وتسجيل العملية</strong>. وبحسب المصادر التي تمت مراجعتها، لم نجد توثيقًا رسميًا لنشر
-      هذا التكامل المحدد كشبكة أحياء تجارية؛ ولذلك يُعرض كفكرة/نموذج أولي قيد التطوير وليس
-      كادعاء بأنها «الأولى في المملكة».
-    </div>
+ <div class="container">
+  <div class="section-head"><div class="kicker">07 · EVIDENCE</div><h2>المصادر التي تثبت أن المشكلة واقعية</h2><p>المصادر لا تثبت أن حلنا مطبق؛ هي تثبت السياق الحقيقي الذي بُنيت عليه المشكلة.</p></div>
+  <div class="sources">
+   <div class="source"><h3>هيئة النقل — 101+ مليون طلب</h3><p>بيانات الربع الثاني 2025 عن حجم قطاع توصيل الطلبات في المملكة، مع أكثر من 45.68 مليون طلب في الرياض.</p><a target="_blank" rel="noopener" href="https://www.spa.gov.sa/N2364433">فتح المصدر الرسمي ←</a></div>
+   <div class="source"><h3>تجربة توصيل الطرود بالدرون في جدة</h3><p>توثيق رسمي لتجربة أجريت في سبتمبر 2025 بالتعاون بين الهيئة العامة للطيران المدني وهيئة النقل.</p><a target="_blank" rel="noopener" href="https://www.spa.gov.sa/N2390793">فتح المصدر الرسمي ←</a></div>
+   <div class="source"><h3>تنظيم التوصيل والعنوان الوطني</h3><p>قرارات تنظيمية حديثة تستهدف رفع كفاءة التوصيل وتحسين دقة مواقع التسليم وتقليل الاتصالات غير الضرورية.</p><a target="_blank" rel="noopener" href="https://www.spa.gov.sa/en/N2479859">فتح المصدر الرسمي ←</a></div>
+   <div class="source"><h3>مشكلات مواقع التوزيع</h3><p>جولات رقابية رصدت من ضمن المخالفات تكدس الشحنات في مستودعات وإجبار مستفيدين على الاستلام من نقاط معينة.</p><a target="_blank" rel="noopener" href="https://www.spa.gov.sa/N2288905">فتح المصدر الرسمي ←</a></div>
+   <div class="source"><h3>التسليم للموقع المتفق عليه</h3><p>هيئة النقل أكدت ضرورة إيصال الشحنات إلى المواقع المحددة والمتفق عليها وعدم إجبار المستفيد على موقع مختلف.</p><a target="_blank" rel="noopener" href="https://www.spa.gov.sa/N2279606">فتح المصدر الرسمي ←</a></div>
+   <div class="source"><h3>الطائرات بدون طيار — تجربة وتطوير</h3><p>السياق الرسمي لتطوير تطبيقات الدرون في قطاع الطرود، مع استمرار المتطلبات التنظيمية والسلامة التشغيلية.</p><a target="_blank" rel="noopener" href="https://www.spa.gov.sa/N2390793">فتح المصدر الرسمي ←</a></div>
   </div>
+  <div class="callout" style="margin-top:22px;border-right-color:var(--cyan);background:rgba(84,220,255,.045)">
+   <b style="color:var(--cyan)">حدود الادعاء العلمي:</b>
+   توجد بالفعل تجارب لتوصيل الطرود بالدرون في السعودية، لذلك المشروع لا يدعي أن «الدرون جديد في المملكة».
+   الفكرة التي نختبرها هي تكامل محطة ذكية داخل الحي لإدارة الوصول، وتخصيص الحجرة، ومراقبة مدة البقاء،
+   والتحقق من المستلم، وتسجيل العملية في نظام واحد. وسيتم إثبات ما ينجح منه بالاختبارات الفعلية.
+  </div>
+ </div>
 </section>
 
 <footer>
-  <div class="container">
-    <strong>HazardGuard Drone Network</strong><br>
-    Wijdan Yahya Al-Khabrani · Occupational Health & Safety · Saudi Arabia 🇸🇦
-    <div class="disclaimer">
-      هذا الموقع يعرض مفهومًا ونموذجًا أوليًا قيد التطوير، ولا يدعي أن الشبكة
-      قد تم نشرها أو تشغيلها تجاريًا.
-    </div>
-  </div>
+ <div class="container">
+  <strong>HazardGuard Drone Network</strong><br>
+  Wijdan Yahya Al-Khabrani · Occupational Health & Safety · Saudi Arabia 🇸🇦
+  <div class="disclaimer">Student concept / prototype in development — not presented as a commercially deployed network.</div>
+ </div>
 </footer>
-
 </body>
 </html>
