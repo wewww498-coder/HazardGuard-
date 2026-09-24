@@ -84,6 +84,52 @@ footer{border-top:1px solid var(--line);padding:35px 0;text-align:center;color:v
   nav a{display:none}
 }
 @media(max-width:480px){.steps{grid-template-columns:1fr}}
+
+/* Premium space-tech visual layer */
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;
+  background-image:
+    radial-gradient(circle at 12% 18%,rgba(103,215,255,.75) 0 1px,transparent 1.5px),
+    radial-gradient(circle at 78% 12%,rgba(155,124,255,.8) 0 1px,transparent 1.5px),
+    radial-gradient(circle at 32% 72%,rgba(255,255,255,.7) 0 1px,transparent 1.5px),
+    radial-gradient(circle at 88% 66%,rgba(103,215,255,.65) 0 1px,transparent 1.5px),
+    radial-gradient(circle at 56% 38%,rgba(255,255,255,.5) 0 1px,transparent 1.5px);
+  background-size:240px 240px,310px 310px,190px 190px,270px 270px,360px 360px;
+  opacity:.55;
+}
+body::after{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:-2;
+  background:
+    radial-gradient(ellipse at 50% 0%,rgba(43,89,150,.25),transparent 45%),
+    radial-gradient(ellipse at 100% 45%,rgba(105,70,180,.13),transparent 38%);
+}
+.hero{position:relative;overflow:hidden;padding:105px 0 85px}
+.hero::before{
+  content:"";position:absolute;width:620px;height:620px;left:50%;top:-300px;
+  transform:translateX(-50%);border-radius:50%;
+  background:radial-gradient(circle,rgba(103,215,255,.10),transparent 68%);
+  pointer-events:none;
+}
+.hero .container{position:relative}
+.logo{font-size:16px}
+.badge{box-shadow:0 0 25px rgba(103,215,255,.08)}
+h1{letter-spacing:-1.5px;text-shadow:0 0 35px rgba(103,215,255,.10)}
+.card,.step,.media,.table-wrap{
+  box-shadow:0 18px 50px rgba(0,0,0,.20),inset 0 1px 0 rgba(255,255,255,.025);
+}
+.card:hover,.step:hover{
+  transform:translateY(-3px);border-color:#426084;transition:.25s ease;
+}
+.section-title h2{letter-spacing:-.4px}
+.media{
+  width:min(760px,100%);min-height:0;margin-left:auto;margin-right:auto;
+  padding:10px;background:rgba(9,19,34,.82);
+}
+.media img,.media video{max-height:420px;object-fit:contain;background:#060d17}
+.prototype-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start}
+.source-card .btn{margin-top:14px;font-size:13px;padding:8px 13px}
+footer{background:rgba(6,12,22,.35)}
+@media(max-width:800px){.prototype-grid{grid-template-columns:1fr}.media{width:100%}}
 </style>
 </head>
 <body>
@@ -211,16 +257,15 @@ footer{border-top:1px solid var(--line);padding:35px 0;text-align:center;color:v
       <p>الموقع سيُحدَّث تدريجيًا ليعرض النموذج البرمجي والاختبارات الفعلية.</p>
     </div>
 
-    <div class="media" style="margin-bottom:24px;">
+    <div class="prototype-grid"><div class="media">
       <img src="concept.png" alt="HazardGuard Drone Network concept">
     </div>
-
     <div class="media">
       <video controls poster="concept.png">
         <source src="simulation.mp4" type="video/mp4">
         المتصفح لا يدعم تشغيل الفيديو.
       </video>
-    </div>
+    </div></div>
 
     <p class="note">
       ملاحظة: الصورة والفيديو الحاليان من النسخة السابقة وسيتم استبدالهما/تحديثهما
@@ -267,32 +312,32 @@ footer{border-top:1px solid var(--line);padding:35px 0;text-align:center;color:v
       <p>مراجع رسمية وأبحاث ومشروعات موثقة راجعناها لفهم تطور توصيل الدرون واللوجستيات الذكية في المملكة.</p>
     </div>
     <div class="grid">
-      <div class="card">
+      <div class="card source-card">
         <h3>KAUST — Autonomous Drone Delivery</h3>
         <p>تجارب لتوصيل الطعام والسلع باستخدام الدرون، مع اختبار محطات Hub في بيئة KAUST.</p>
         <a class="btn" target="_blank" rel="noopener" href="https://leap.kaust.edu.sa/autonomous-drone-delivery.html">فتح المصدر</a>
       </div>
-      <div class="card">
+      <div class="card source-card">
         <h3>FalconViz — Autonomous Delivery</h3>
         <p>توثيق لأنظمة توصيل ذاتية وتجارب Carpet-to-Carpet وHub-to-Hub مرتبطة ببيئة KAUST والسعودية.</p>
         <a class="btn" target="_blank" rel="noopener" href="https://falconviz.com/autonomus.html">فتح المصدر</a>
       </div>
-      <div class="card">
+      <div class="card source-card">
         <h3>KAUST Research — Safe Drone Delivery</h3>
         <p>بحث حول تخطيط مسارات آمنة لتوصيل الدرون مع مراعاة مخاطر الأعطال والهبوط الآمن.</p>
         <a class="btn" target="_blank" rel="noopener" href="https://academia.kaust.edu.sa/en/publications/safe-trajectory-planning-for-safety-critical-drone-delivery">فتح البحث</a>
       </div>
-      <div class="card">
+      <div class="card source-card">
         <h3>Saudi Press Agency — Jeddah Trial</h3>
         <p>خبر رسمي عن تجربة توصيل طرود بالدرون في جدة عام 2025 بالتعاون بين GACA وTGA.</p>
         <a class="btn" target="_blank" rel="noopener" href="https://www.spa.gov.sa/N2390793">فتح المصدر</a>
       </div>
-      <div class="card">
+      <div class="card source-card">
         <h3>GACA — تنظيم الطائرات بدون طيار</h3>
         <p>المتطلبات التنظيمية والتشغيلية للطائرات بدون طيار في المملكة، ومنها التسجيل والتصاريح.</p>
         <a class="btn" target="_blank" rel="noopener" href="https://gaca.gov.sa/-/media/Files/PDF/LawsAndRegulation/Aviation-Safety-and-Environmental-Sustainability/Safety-and-Aviation-Standards-Advisory-Circulars/AC-101-01-Small-Unmanned-Aircraft-Systems.pdf">فتح المصدر</a>
       </div>
-      <div class="card">
+      <div class="card source-card">
         <h3>رؤية السعودية 2030 — الخدمات اللوجستية</h3>
         <p>معلومات رسمية عن تطوير البنية اللوجستية والاستثمار في التقنيات الذكية والأتمتة.</p>
         <a class="btn" target="_blank" rel="noopener" href="https://www.vision2030.gov.sa/media/ecdjfopq/vision2030_annual_report_2025_en.pdf">فتح التقرير</a>
