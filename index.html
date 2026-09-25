@@ -123,6 +123,7 @@ footer{border-top:1px solid var(--line);padding:35px 0;text-align:center;color:v
       <div class="step"><div class="num">06</div><h3>Decide</h3><p>The safety engine selects SAFE, WAIT or STOP and explains why.</p></div>
       <div class="step"><div class="num">07</div><h3>Guide</h3><p>The recipient is directed to the designated interaction area when appropriate.</p></div>
       <div class="step"><div class="num">08</div><h3>Recheck</h3><p>The scene is reassessed before collection and again before departure.</p></div>
+      <div class="step"><div class="num">09</div><h3>Depart</h3><p>The drone resumes its route only after the area is confirmed safe.</p></div>
     </div>
     <div class="flow">
       <span>📷 Camera</span><b class="arrow">→</b>
@@ -162,7 +163,8 @@ footer{border-top:1px solid var(--line);padding:35px 0;text-align:center;color:v
     <div class="grid">
       <div class="card"><h3>Human Safety</h3><p>Reduce potentially unsafe human–drone interactions during package collection.</p></div>
       <div class="card"><h3>Dynamic Awareness</h3><p>Respond to changing conditions instead of relying on a fixed delivery-area assumption.</p></div>
-      <div class="card"><h3>Explainable Action</h3><p>Connect each safety state to a clear action and reason for the decision.</p></div>
+      <div class="card"><h3>Controlled Delivery</h3><p>Pause, hold, or resume the delivery according to the current scene.</p></div>
+      <div class="card"><h3>Explainable Action</h3><p>Connect each safety decision to a clear action and reason.</p></div>
     </div>
   </div>
 </section>
@@ -175,6 +177,8 @@ footer{border-top:1px solid var(--line);padding:35px 0;text-align:center;color:v
     </div>
     <div class="card">
       <p>Future work will focus on real-time camera integration, stronger multi-object tracking, path-risk prediction, recipient guidance, controlled drone integration, and measured evaluation using detection accuracy, response time, false alerts, missed hazards, and decision consistency.</p>
+      <p style="margin-top:14px;color:var(--accent);font-weight:700;">From object detection to safety decisions.</p>
+      <p style="margin-top:6px;">Object detection answers “what is in the image?” HazardGuard adds “what should happen next?”</p>
     </div>
   </div>
 </section>
