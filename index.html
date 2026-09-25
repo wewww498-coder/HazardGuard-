@@ -1,43 +1,208 @@
-<!doctype html><html lang="en" dir="ltr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>HazardGuard Drone | AI Safety for Residential Drone Delivery</title><meta name="description" content="HazardGuard Drone — AI-powered safety decision system for residential drone delivery."><style>
-:root{--bg:#050b14;--card:#0b1524;--line:#21364e;--text:#f4f8ff;--muted:#a5b4c7;--cyan:#62e5ff;--green:#59dfa5;--yellow:#ffd166;--red:#ff6678}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:"Segoe UI",Tahoma,Arial,sans-serif;color:var(--text);background:radial-gradient(circle at 50% -10%,#173653,transparent 38%),var(--bg);line-height:1.7}body:before{content:"";position:fixed;inset:0;z-index:-1;opacity:.16;background-image:radial-gradient(circle,#fff 0 1px,transparent 1.5px);background-size:180px 180px}.container{width:min(1120px,92%);margin:auto}nav{position:sticky;top:0;z-index:20;background:#050b14ed;backdrop-filter:blur(14px);border-bottom:1px solid #ffffff12}.nav{height:68px;display:flex;align-items:center;justify-content:space-between}.brand{font-weight:900}.brand span,h1 span,.kicker,.quote{color:var(--cyan)}nav a{color:#b8c6d7;text-decoration:none;margin-left:17px;font-size:13px}nav a:hover{color:#fff}.lang,.btn{border:1px solid #36516e;background:#0c192b;color:#fff;border-radius:10px;padding:8px 12px;font-weight:800;cursor:pointer}.hero{padding:92px 0 72px;text-align:center}.badge{display:inline-block;border:1px solid #31506e;background:#0b1828;color:var(--cyan);padding:7px 14px;border-radius:999px;font-size:12px;font-weight:800}h1{font-size:clamp(44px,7vw,72px);line-height:1.05;margin:20px 0 12px}.hero h2{font-size:clamp(20px,3vw,28px);margin:0 0 14px}.hero p,.head p{color:var(--muted)}.hero p{max-width:820px;margin:auto;font-size:16px}.actions{display:flex;justify-content:center;gap:12px;margin-top:25px;flex-wrap:wrap}.btn{text-decoration:none;display:inline-block}.primary{background:var(--cyan);color:#031018;border-color:var(--cyan)}section{padding:72px 0}.head{text-align:center;max-width:850px;margin:0 auto 32px}.kicker{font-size:11px;font-weight:900;letter-spacing:1.4px}.head h2{font-size:clamp(28px,4vw,40px);line-height:1.25;margin:7px 0}.grid2{display:grid;grid-template-columns:1.1fr .9fr;gap:18px}.panel,.card,.state,.step,.result,.ref,.highlight{background:#0a1422;border:1px solid var(--line);border-radius:18px}.panel{padding:27px}.panel h3,.card h3,.state h3,.step h3{margin:7px 0}.panel p,.card p,.state p,.step p,.result p,.ref p{color:var(--muted)}.alert{margin-top:18px;padding:15px;border-radius:12px;border-left:4px solid var(--red);background:#ff66780c}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.card{padding:21px}.icon{font-size:24px}.states{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.state{padding:22px}.safe{border-top:4px solid var(--green)}.wait{border-top:4px solid var(--yellow)}.stop{border-top:4px solid var(--red)}.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.step{padding:20px;min-height:145px}.num{color:var(--cyan);font-size:11px;font-weight:900}.flow{text-align:center;margin-top:20px;padding:17px;background:#08111d;border:1px solid var(--line);border-radius:16px}.flow span{display:inline-block;background:#0e1b2d;border:1px solid #36516e;border-radius:8px;padding:7px 10px;margin:4px;font-size:12px}.flow b{color:var(--cyan)}.highlight{padding:30px;text-align:center;background:linear-gradient(145deg,#0c1c2e,#08111d)}.highlight p{max-width:800px;margin:10px auto;color:#c7d3e1;font-size:18px}.quote{font-size:23px;font-weight:900;margin-top:15px}.media{display:grid;grid-template-columns:1fr 1fr;gap:18px}.mediaBox{background:#07101b;border:1px solid var(--line);border-radius:18px;padding:12px;display:flex;align-items:center;justify-content:center;min-height:300px}.mediaBox img,.mediaBox video{width:100%;max-height:520px;object-fit:contain;border-radius:10px}.results{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.result{padding:18px}.result strong{color:var(--cyan);font-size:12px}.refs{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.ref{padding:13px}.ref b{font-size:14px}.ref p{font-size:12px;margin:4px 0}footer{border-top:1px solid var(--line);padding:38px 0;text-align:center;color:#8fa1b8}footer strong{color:#fff}[dir=rtl]nav a{margin-left:0;margin-right:17px}[dir=rtl] .alert{border-left:0;border-right:4px solid var(--red)}@media(max-width:850px){.grid2,.media{grid-template-columns:1fr}.cards,.states,.steps{grid-template-columns:1fr 1fr}.results{grid-template-columns:1fr 1fr}.refs{grid-template-columns:1fr}nav a{display:none}}@media(max-width:560px){.cards,.states,.steps,.results{grid-template-columns:1fr}.hero{padding-top:58px}h1{font-size:44px}}
-</style></head><body>
-<nav><div class="container nav"><div class="brand">Hazard<span>Guard</span> Drone</div><div><a href="#overview" data-en="Overview" data-ar="نظرة عامة">Overview</a><a href="#problem" data-en="Problem" data-ar="المشكلة">Problem</a><a href="#how" data-en="How It Works" data-ar="آلية العمل">How It Works</a><a href="#prototype" data-en="Simulation" data-ar="المحاكاة">Simulation</a><a href="#references" data-en="References" data-ar="المراجع">References</a><button class="lang" id="langBtn">العربية</button></div></div></nav>
-<header class="hero"><div class="container"><div class="badge">🇸🇦 Saudi Arabia · Independent Student Innovation</div><h1>Hazard<span>Guard</span> Drone</h1><h2 data-en="AI-Powered Safety Decision System for Residential Drone Delivery" data-ar="نظام ذكي لاتخاذ قرارات السلامة في توصيل الطلبات بالطائرات بدون طيار">AI-Powered Safety Decision System for Residential Drone Delivery</h2><p data-en="A human-centered AI safety layer designed to continuously assess the delivery area, detect dynamic hazards, and decide whether delivery should proceed, wait, or stop." data-ar="طبقة سلامة مدعومة بالذكاء الاصطناعي تراقب منطقة التسليم، وتكتشف المخاطر المتغيرة، وتقرر ما إذا كان التسليم يستمر أو ينتظر أو يتوقف.">A human-centered AI safety layer designed to continuously assess the delivery area, detect dynamic hazards, and decide whether delivery should proceed, wait, or stop.</p><div class="actions"><a class="btn primary" href="#prototype" data-en="View Simulation" data-ar="شاهد المحاكاة">View Simulation</a><a class="btn" href="#how" data-en="How It Works" data-ar="آلية العمل">How It Works</a></div></div></header>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HazardGuard Drone | AI-Powered Safety Decision System</title>
+<style>
+:root{
+  --bg:#07111f; --card:#0d1b2e; --card2:#10243b; --text:#eef6ff;
+  --muted:#a9bdd1; --line:#1d3854; --accent:#4cc9f0; --green:#42e695;
+  --yellow:#ffd166; --red:#ff5c7a; --white:#fff;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:Arial,Helvetica,sans-serif;background:linear-gradient(180deg,#07111f 0%,#09182a 45%,#06101c 100%);color:var(--text);line-height:1.65}
+.container{width:min(1120px,92%);margin:auto}
+nav{position:sticky;top:0;z-index:10;background:rgba(7,17,31,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.nav-inner{display:flex;justify-content:space-between;align-items:center;padding:16px 0}
+.logo{font-weight:800;letter-spacing:.4px}.logo span{color:var(--accent)}
+nav a{color:var(--muted);text-decoration:none;margin-left:22px;font-size:14px}nav a:hover{color:var(--white)}
+.hero{padding:88px 0 70px;text-align:center}
+.badge{display:inline-block;padding:7px 14px;border:1px solid #2c526f;border-radius:999px;color:var(--accent);background:#0b1d31;font-size:13px;margin-bottom:20px}
+h1{font-size:clamp(42px,7vw,76px);line-height:1.05;margin-bottom:16px}h1 span{color:var(--accent)}
+.subtitle{font-size:clamp(19px,2.5vw,27px);color:#d5e6f5;margin-bottom:22px}.hero p{max-width:780px;margin:auto;color:var(--muted);font-size:17px}
+.btns{margin-top:30px;display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+.btn{display:inline-block;padding:12px 20px;border-radius:10px;text-decoration:none;font-weight:700;border:1px solid var(--line);color:var(--text);background:var(--card)}
+.btn.primary{background:var(--accent);color:#03101b;border-color:var(--accent)}
+section{padding:64px 0}.section-title{text-align:center;margin-bottom:35px}.section-title h2{font-size:34px;margin-bottom:8px}.section-title p{color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.card{background:linear-gradient(145deg,var(--card),#0a1727);border:1px solid var(--line);border-radius:18px;padding:25px;box-shadow:0 14px 40px rgba(0,0,0,.18)}
+.card h3{margin-bottom:9px}.card p{color:var(--muted)}
+.problem{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:stretch}
+.highlight{border-left:4px solid var(--accent);padding:25px;background:#0a192a;border-radius:12px}.highlight strong{color:var(--accent)}
+.states{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.state{padding:22px;border-radius:16px;border:1px solid var(--line);background:var(--card)}
+.state .dot{width:13px;height:13px;border-radius:50%;display:inline-block;margin-right:8px}
+.safe .dot{background:var(--green)} .wait .dot{background:var(--yellow)} .stop .dot{background:var(--red)}
+.safe h3{color:var(--green)} .wait h3{color:var(--yellow)} .stop h3{color:var(--red)}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.step{text-align:center;padding:22px 15px;background:var(--card);border:1px solid var(--line);border-radius:16px}
+.num{font-size:13px;color:var(--accent);font-weight:800}.step h3{margin:8px 0}.step p{font-size:14px;color:var(--muted)}
+.media{border:1px solid var(--line);border-radius:18px;min-height:280px;display:flex;align-items:center;justify-content:center;text-align:center;background:#081827;overflow:hidden}
+.media img,.media video{width:100%;max-width:100%;height:auto;display:block;border-radius:18px}
+.flow{display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap;margin-top:25px}
+.flow span{padding:10px 14px;border-radius:10px;background:#10263d;border:1px solid #264b68;font-size:14px}.arrow{color:var(--accent);font-weight:800}
+footer{border-top:1px solid var(--line);padding:35px 0;text-align:center;color:var(--muted)}.disclaimer{font-size:13px;color:#8fa7bb;margin-top:12px}
+@media(max-width:800px){.grid,.problem,.states{grid-template-columns:1fr}.steps{grid-template-columns:repeat(2,1fr)}nav a{display:none}}
+@media(max-width:480px){.steps{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav>
+  <div class="container nav-inner">
+    <div class="logo">Hazard<span>Guard</span> Drone</div>
+    <div>
+      <a href="#overview">Overview</a>
+      <a href="#how">How It Works</a>
+      <a href="#simulation">Simulation</a>
+      <a href="#references">References</a>
+    </div>
+  </div>
+</nav>
 
-<section id="overview"><div class="container"><div class="head"><div class="kicker">01 · OVERVIEW</div><h2 data-en="Safety at the delivery point — not only during flight." data-ar="السلامة عند نقطة التسليم — وليس أثناء الطيران فقط.">Safety at the delivery point — not only during flight.</h2><p data-en="Residential drone delivery brings the aircraft close to people and changing environments. HazardGuard adds a safety decision layer that evaluates the final human–drone interaction before package collection." data-ar="يقرب توصيل الطلبات بالدرون الطائرة من الأشخاص والبيئات المتغيرة. يضيف HazardGuard طبقة لاتخاذ قرار السلامة وتقييم التفاعل النهائي بين الإنسان والدرون قبل استلام الشحنة.">Residential drone delivery brings the aircraft close to people and changing environments. HazardGuard adds a safety decision layer that evaluates the final human–drone interaction before package collection.</p></div><div class="highlight"><p data-en="The system continuously asks:" data-ar="يسأل النظام بشكل مستمر:">The system continuously asks:</p><div class="quote" data-en="“Is it safe to continue the delivery right now?”" data-ar="«هل من الآمن مواصلة التسليم الآن؟»">“Is it safe to continue the delivery right now?”</div></div></div></section>
+<header class="hero">
+  <div class="container">
+    <div class="badge">🇸🇦 Saudi Arabia · Independent Student Innovation</div>
+    <h1>Hazard<span>Guard</span> Drone</h1>
+    <div class="subtitle">AI-Powered Safety Decision System for Residential Drone Delivery</div>
+    <p>A human-centered AI safety layer that continuously assesses the delivery area, detects changing hazards, and decides whether delivery should proceed, wait, or stop.</p>
+    <div class="btns">
+      <a class="btn primary" href="#simulation">View Simulation</a>
+      <a class="btn" href="#how">How It Works</a>
+    </div>
+  </div>
+</header>
 
-<section id="problem"><div class="container"><div class="head"><div class="kicker">02 · THE PROBLEM</div><h2 data-en="Dynamic environments require dynamic safety decisions." data-ar="البيئات المتغيرة تحتاج إلى قرارات سلامة متغيرة.">Dynamic environments require dynamic safety decisions.</h2><p data-en="A delivery area can become unsafe seconds after it was clear. People, children, animals, vehicles, and obstacles may enter while the drone is approaching or preparing to release a package." data-ar="قد تصبح منطقة التسليم غير آمنة بعد ثوانٍ من كونها خالية. قد يدخل أشخاص أو أطفال أو حيوانات أو مركبات أو عوائق أثناء اقتراب الدرون أو استعدادها لتسليم الشحنة.">A delivery area can become unsafe seconds after it was clear. People, children, animals, vehicles, and obstacles may enter while the drone is approaching or preparing to release a package.</p></div><div class="grid2"><div class="panel"><h3 data-en="The safety gap" data-ar="فجوة السلامة">The safety gap</h3><p data-en="Navigation can tell a drone where to go. HazardGuard focuses on a different question: whether the environment is safe for the human–drone interaction at the delivery point." data-ar="قد تخبر أنظمة الملاحة الدرون إلى أين تذهب. أما HazardGuard فيركز على سؤال مختلف: هل البيئة آمنة للتفاعل بين الإنسان والدرون عند نقطة التسليم؟">Navigation can tell a drone where to go. HazardGuard focuses on a different question: whether the environment is safe for the human–drone interaction at the delivery point.</p><div class="alert"><b data-en="Challenge:" data-ar="التحدي:">Challenge:</b> <span data-en="Detect a changing hazard and translate it into a clear delivery action before an unsafe interaction occurs." data-ar="اكتشاف الخطر المتغير وتحويله إلى إجراء واضح قبل حدوث تفاعل غير آمن.">Detect a changing hazard and translate it into a clear delivery action before an unsafe interaction occurs.</span></div></div><div class="cards" style="grid-template-columns:1fr"><div class="card"><div class="icon">👤</div><h3 data-en="People & children" data-ar="الأشخاص والأطفال">People & children</h3><p data-en="Unexpected movement near the delivery area." data-ar="حركة غير متوقعة بالقرب من منطقة التسليم.">Unexpected movement near the delivery area.</p></div><div class="card"><div class="icon">🐕</div><h3 data-en="Animals" data-ar="الحيوانات">Animals</h3><p data-en="Animals entering or crossing the relevant area." data-ar="دخول الحيوانات أو عبورها للمنطقة ذات الصلة.">Animals entering or crossing the relevant area.</p></div><div class="card"><div class="icon">🚗</div><h3 data-en="Vehicles & obstacles" data-ar="المركبات والعوائق">Vehicles & obstacles</h3><p data-en="Moving or static objects that can affect the delivery condition." data-ar="أجسام متحركة أو ثابتة قد تؤثر على حالة التسليم.">Moving or static objects that can affect the delivery condition.</p></div></div></div></div></section>
+<section id="overview">
+  <div class="container">
+    <div class="section-title">
+      <h2>Project Overview</h2>
+      <p>Safety at the delivery point — not only during flight.</p>
+    </div>
+    <div class="problem">
+      <div class="card">
+        <h3>⚠️ The Problem</h3>
+        <p>Residential delivery areas can change while a drone approaches or prepares to release a package. A person, child, animal, vehicle, or obstacle may enter the interaction zone unexpectedly.</p>
+      </div>
+      <div class="highlight">
+        <strong>Our approach</strong><br>
+        Instead of treating detection as the final step, HazardGuard turns visual information into a safety decision:
+        <br><br><em>“Is it safe to continue the delivery right now?”</em>
+      </div>
+    </div>
+  </div>
+</section>
 
-<section><div class="container"><div class="head"><div class="kicker">03 · SAFETY STATUS</div><h2 data-en="Three simple operational states." data-ar="ثلاث حالات تشغيلية واضحة.">Three simple operational states.</h2></div><div class="states"><div class="state safe"><div>🟢</div><h3>SAFE</h3><p data-en="The relevant area is sufficiently clear. Continue the delivery process." data-ar="المنطقة ذات الصلة آمنة بما يكفي. يستمر إجراء التسليم.">The relevant area is sufficiently clear. Continue the delivery process.</p></div><div class="state wait"><div>🟡</div><h3>WAIT</h3><p data-en="A temporary condition requires observation. Hold delivery while monitoring continues." data-ar="هناك حالة مؤقتة تحتاج إلى مراقبة. يتم تعليق التسليم مع استمرار المراقبة.">A temporary condition requires observation. Hold delivery while monitoring continues.</p></div><div class="state stop"><div>🔴</div><h3>STOP</h3><p data-en="A significant hazard is detected. Pause delivery and reassess the environment." data-ar="تم اكتشاف خطر مهم. يتوقف التسليم مؤقتًا وتتم إعادة تقييم البيئة.">A significant hazard is detected. Pause delivery and reassess the environment.</p></div></div></div></section>
+<section>
+  <div class="container">
+    <div class="section-title">
+      <h2>Safety Status</h2>
+      <p>A simple decision layer translates the scene into an action.</p>
+    </div>
+    <div class="states">
+      <div class="state safe"><span class="dot"></span><h3>SAFE</h3><p>No relevant hazard is detected in the delivery zone. The process may continue.</p></div>
+      <div class="state wait"><span class="dot"></span><h3>WAIT</h3><p>A temporary or uncertain condition is present. Delivery pauses while the system reassesses.</p></div>
+      <div class="state stop"><span class="dot"></span><h3>STOP</h3><p>A significant hazard is detected. The delivery is held or aborted until conditions are acceptable.</p></div>
+    </div>
+  </div>
+</section>
 
-<section id="how"><div class="container"><div class="head"><div class="kicker">04 · HOW IT WORKS</div><h2 data-en="Detect → Track → Assess → Decide → Guide" data-ar="اكتشاف ← تتبع ← تقييم ← قرار ← توجيه">Detect → Track → Assess → Decide → Guide</h2><p data-en="The prototype connects computer vision with safety-oriented decision logic." data-ar="يربط النموذج الأولي بين الرؤية الحاسوبية ومنطق اتخاذ القرار الموجه للسلامة.">The prototype connects computer vision with safety-oriented decision logic.</p></div><div class="steps">
-<div class="step"><div class="num">01 · MONITOR</div><h3 data-en="Monitor" data-ar="المراقبة">Monitor</h3><p data-en="A camera observes the residential delivery environment." data-ar="تراقب الكاميرا بيئة التسليم السكنية.">A camera observes the residential delivery environment.</p></div>
-<div class="step"><div class="num">02 · DETECT</div><h3 data-en="Detect" data-ar="الاكتشاف">Detect</h3><p data-en="AI vision identifies people, children, animals, vehicles, and obstacles." data-ar="تتعرف الرؤية الحاسوبية على الأشخاص والأطفال والحيوانات والمركبات والعوائق.">AI vision identifies people, children, animals, vehicles, and obstacles.</p></div>
-<div class="step"><div class="num">03 · TRACK</div><h3 data-en="Track" data-ar="التتبع">Track</h3><p data-en="Detected objects are tracked as their positions change." data-ar="يتم تتبع الأجسام المكتشفة مع تغير مواقعها.">Detected objects are tracked as their positions change.</p></div>
-<div class="step"><div class="num">04 · ASSESS</div><h3 data-en="Assess" data-ar="التقييم">Assess</h3><p data-en="The system evaluates object position relative to the delivery safety area." data-ar="يقيم النظام موقع الجسم بالنسبة إلى منطقة سلامة التسليم.">The system evaluates object position relative to the delivery safety area.</p></div>
-<div class="step"><div class="num">05 · PREDICT</div><h3 data-en="Predict" data-ar="التنبؤ">Predict</h3><p data-en="Movement is considered to estimate whether an object may enter or interfere with the relevant area." data-ar="تؤخذ حركة الجسم في الاعتبار لتقدير احتمالية دخوله أو تأثيره على المنطقة ذات الصلة.">Movement is considered to estimate whether an object may enter or interfere with the relevant area.</p></div>
-<div class="step"><div class="num">06 · DECIDE</div><h3 data-en="Decide" data-ar="اتخاذ القرار">Decide</h3><p data-en="The safety engine selects SAFE, WAIT, or STOP." data-ar="يحدد محرك السلامة الحالة: SAFE أو WAIT أو STOP.">The safety engine selects SAFE, WAIT, or STOP.</p></div>
-<div class="step"><div class="num">07 · GUIDE</div><h3 data-en="Guide" data-ar="التوجيه">Guide</h3><p data-en="When appropriate, the recipient is directed toward a designated safe position." data-ar="عند الحاجة، يتم توجيه المستلم نحو موضع استلام آمن محدد.">When appropriate, the recipient is directed toward a designated safe position.</p></div>
-<div class="step"><div class="num">08 · RECHECK</div><h3 data-en="Recheck" data-ar="إعادة الفحص">Recheck</h3><p data-en="The environment is checked again before and after collection." data-ar="تتم إعادة فحص البيئة قبل الاستلام وبعده.">The environment is checked again before and after collection.</p></div>
-<div class="step"><div class="num">09 · DEPART</div><h3 data-en="Depart" data-ar="المغادرة">Depart</h3><p data-en="The drone proceeds with departure after the final safety check." data-ar="تغادر الدرون بعد اجتياز فحص السلامة النهائي.">The drone proceeds with departure after the final safety check.</p></div></div><div class="flow"><span>📷 CAMERA</span><b>→</b><span>🧠 AI VISION</span><b>→</b><span>🎯 DETECTION & TRACKING</span><b>→</b><span>⚠️ RISK ASSESSMENT</span><b>→</b><span>🛡️ DECISION</span><b>→</b><span>🚁 DELIVERY / HOLD / STOP</span></div></div></section>
+<section id="how">
+  <div class="container">
+    <div class="section-title">
+      <h2>How It Works</h2>
+      <p>From visual input to an explainable delivery decision.</p>
+    </div>
+    <div class="steps">
+      <div class="step"><div class="num">01</div><h3>Monitor</h3><p>Camera input observes the delivery area.</p></div>
+      <div class="step"><div class="num">02</div><h3>Detect</h3><p>AI vision identifies people, animals, vehicles and obstacles.</p></div>
+      <div class="step"><div class="num">03</div><h3>Track</h3><p>Detected objects are followed across frames to understand movement.</p></div>
+      <div class="step"><div class="num">04</div><h3>Assess</h3><p>The system considers position, movement and proximity to the delivery path.</p></div>
+      <div class="step"><div class="num">05</div><h3>Predict</h3><p>Potential path conflicts are estimated before the next action.</p></div>
+      <div class="step"><div class="num">06</div><h3>Decide</h3><p>The safety engine selects SAFE, WAIT or STOP and explains why.</p></div>
+      <div class="step"><div class="num">07</div><h3>Guide</h3><p>The recipient is directed to the designated interaction area when appropriate.</p></div>
+      <div class="step"><div class="num">08</div><h3>Recheck</h3><p>The scene is reassessed before collection and again before departure.</p></div>
+    </div>
+    <div class="flow">
+      <span>📷 Camera</span><b class="arrow">→</b>
+      <span>🧠 AI Vision</span><b class="arrow">→</b>
+      <span>🎯 Tracking</span><b class="arrow">→</b>
+      <span>⚠️ Risk Assessment</span><b class="arrow">→</b>
+      <span>🛡️ Safety Decision</span>
+    </div>
+  </div>
+</section>
 
-<section><div class="container"><div class="head"><div class="kicker">05 · DIFFERENTIATOR</div><h2 data-en="From object detection to safety decisions." data-ar="من اكتشاف الأجسام إلى قرارات السلامة.">From object detection to safety decisions.</h2><p data-en="Object detection answers “what is in the image?” HazardGuard adds the next question: “what should happen next?”" data-ar="اكتشاف الأجسام يجيب عن سؤال «ماذا يوجد في الصورة؟». يضيف HazardGuard السؤال التالي: «ماذا يجب أن يحدث الآن؟»">Object detection answers “what is in the image?” HazardGuard adds the next question: “what should happen next?”</p></div><div class="highlight"><p data-en="The prototype connects object location, movement, safety-zone proximity, and delivery status to a clear operational response." data-ar="يربط النموذج الأولي بين موقع الجسم وحركته وقربه من منطقة السلامة وحالة التسليم للوصول إلى استجابة تشغيلية واضحة.">The prototype connects object location, movement, safety-zone proximity, and delivery status to a clear operational response.</p></div></div></section>
+<section id="simulation">
+  <div class="container">
+    <div class="section-title">
+      <h2>Prototype Concept & Simulation</h2>
+      <p>Current visual prototype demonstrating the proposed safety workflow.</p>
+    </div>
+    <div class="media" style="margin-bottom:24px;">
+      <img src="concept.png" alt="HazardGuard Drone Concept Image">
+    </div>
+    <div class="media">
+      <video controls poster="concept.png">
+        <source src="simulation.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+    </div>
+    <p style="text-align:center;color:var(--muted);font-size:13px;margin-top:12px;">The simulation illustrates the intended workflow; it does not claim commercial deployment of the complete system.</p>
+  </div>
+</section>
 
-<section id="prototype"><div class="container"><div class="head"><div class="kicker">06 · PROTOTYPE & SIMULATION</div><h2 data-en="Software prototype and simulation" data-ar="النموذج البرمجي والمحاكاة">Software prototype and simulation</h2><p data-en="The current prototype demonstrates the proposed safety workflow through AI-based visual analysis and simulation. It is not presented as a deployed commercial drone system." data-ar="يعرض النموذج الحالي سير عمل السلامة المقترح من خلال التحليل البصري المدعوم بالذكاء الاصطناعي والمحاكاة، ولا يُقدم على أنه نظام درون تجاري منشور.">The current prototype demonstrates the proposed safety workflow through AI-based visual analysis and simulation. It is not presented as a deployed commercial drone system.</p></div><div class="media"><div class="mediaBox"><img src="concept.png" alt="HazardGuard Drone concept"></div><div class="mediaBox"><video controls poster="concept.png"><source src="simulation.mp4" type="video/mp4">Your browser does not support video.</video></div></div></div></section>
+<section>
+  <div class="container">
+    <div class="section-title">
+      <h2>Expected Results</h2>
+      <p>What the proposed safety layer is designed to demonstrate.</p>
+    </div>
+    <div class="grid">
+      <div class="card"><h3>Human Safety</h3><p>Reduce potentially unsafe human–drone interactions during package collection.</p></div>
+      <div class="card"><h3>Dynamic Awareness</h3><p>Respond to changing conditions instead of relying on a fixed delivery-area assumption.</p></div>
+      <div class="card"><h3>Explainable Action</h3><p>Connect each safety state to a clear action and reason for the decision.</p></div>
+    </div>
+  </div>
+</section>
 
-<section><div class="container"><div class="head"><div class="kicker">07 · EXPECTED RESULTS</div><h2 data-en="Safety outcomes the system aims to support" data-ar="نتائج السلامة التي يهدف النظام إلى دعمها">Safety outcomes the system aims to support</h2></div><div class="results"><div class="result"><strong>01 · HUMAN SAFETY</strong><p data-en="Reduce potentially unsafe human–drone interactions during package collection." data-ar="تقليل التفاعلات غير الآمنة المحتملة بين الإنسان والدرون أثناء استلام الشحنة.">Reduce potentially unsafe human–drone interactions during package collection.</p></div><div class="result"><strong>02 · DYNAMIC AWARENESS</strong><p data-en="Respond to changing conditions rather than relying only on a fixed delivery state." data-ar="الاستجابة للظروف المتغيرة بدل الاعتماد على حالة تسليم ثابتة فقط.">Respond to changing conditions rather than relying only on a fixed delivery state.</p></div><div class="result"><strong>03 · CONTROLLED DELIVERY</strong><p data-en="Hold or stop delivery when safety conditions are not satisfied." data-ar="تعليق أو إيقاف التسليم عندما لا تتحقق شروط السلامة.">Hold or stop delivery when safety conditions are not satisfied.</p></div><div class="result"><strong>04 · EXPLAINABLE ACTION</strong><p data-en="Provide a clear safety state and corresponding action." data-ar="إظهار حالة سلامة واضحة والإجراء المرتبط بها.">Provide a clear safety state and corresponding action.</p></div></div></div></section>
+<section>
+  <div class="container">
+    <div class="section-title">
+      <h2>Future Development</h2>
+      <p>From software simulation toward controlled prototype testing.</p>
+    </div>
+    <div class="card">
+      <p>Future work will focus on real-time camera integration, stronger multi-object tracking, path-risk prediction, recipient guidance, controlled drone integration, and measured evaluation using detection accuracy, response time, false alerts, missed hazards, and decision consistency.</p>
+    </div>
+  </div>
+</section>
 
-<section><div class="container"><div class="head"><div class="kicker">08 · FUTURE DEVELOPMENT</div><h2 data-en="From simulation to a working prototype" data-ar="من المحاكاة إلى نموذج أولي عملي">From simulation to a working prototype</h2></div><div class="cards"><div class="card"><div class="icon">📷</div><h3 data-en="Real-time camera integration" data-ar="دمج كاميرا مباشرة">Real-time camera integration</h3><p data-en="Connect the safety engine to a live camera feed." data-ar="ربط محرك السلامة ببث كاميرا مباشر.">Connect the safety engine to a live camera feed.</p></div><div class="card"><div class="icon">🎯</div><h3 data-en="Advanced tracking" data-ar="تتبع متقدم">Advanced tracking</h3><p data-en="Improve tracking of people, animals, vehicles, and moving obstacles." data-ar="تحسين تتبع الأشخاص والحيوانات والمركبات والعوائق المتحركة.">Improve tracking of people, animals, vehicles, and moving obstacles.</p></div><div class="card"><div class="icon">📈</div><h3 data-en="Risk prediction" data-ar="التنبؤ بالمخاطر">Risk prediction</h3><p data-en="Improve prediction of potential movement into the safety zone." data-ar="تحسين التنبؤ باحتمالية دخول الأجسام إلى منطقة السلامة.">Improve prediction of potential movement into the safety zone.</p></div><div class="card"><div class="icon">👤</div><h3 data-en="Recipient interface" data-ar="واجهة المستلم">Recipient interface</h3><p data-en="Provide clear SAFE, WAIT, and STOP guidance." data-ar="توفير إرشادات واضحة لحالات SAFE وWAIT وSTOP.">Provide clear SAFE, WAIT, and STOP guidance.</p></div><div class="card"><div class="icon">🚁</div><h3 data-en="Controlled drone integration" data-ar="دمج الدرون بشكل متحكم">Controlled drone integration</h3><p data-en="Connect the safety layer to a controlled drone platform in a suitable test environment." data-ar="ربط طبقة السلامة بدرون متحكم به داخل بيئة اختبار مناسبة.">Connect the safety layer to a controlled drone platform in a suitable test environment.</p></div><div class="card"><div class="icon">🧪</div><h3 data-en="Performance evaluation" data-ar="تقييم الأداء">Performance evaluation</h3><p data-en="Measure accuracy, response time, false alerts, missed hazards, and decision consistency." data-ar="قياس الدقة وزمن الاستجابة والتنبيهات الخاطئة والمخاطر غير المكتشفة واتساق القرارات.">Measure accuracy, response time, false alerts, missed hazards, and decision consistency.</p></div></div></div></section>
+<section id="references">
+  <div class="container">
+    <div class="section-title">
+      <h2>References</h2>
+      <p>Background sources supporting the safety concept.</p>
+    </div>
+    <div class="card">
+      <ol style="padding-left:22px;color:var(--muted)">
+        <li>General Authority of Civil Aviation (GACA), Saudi Arabia — Drone regulations and operations.</li>
+        <li>KAUST — Autonomous Drone Delivery Research.</li>
+        <li>FalconViz — Autonomous Delivery Solutions.</li>
+        <li>Amazon Prime Air — Drone Delivery Safety and Technology.</li>
+        <li>Research literature on human–drone interaction and vision-based safe landing systems.</li>
+      </ol>
+    </div>
+  </div>
+</section>
 
-<section><div class="container"><div class="head"><div class="kicker">09 · PROJECT STATUS</div><h2 data-en="Independent Student Innovation" data-ar="ابتكار طلابي مستقل">Independent Student Innovation</h2><p data-en="Current stage: concept + AI software prototype + simulation. The project does not claim that the complete system has already been deployed on a physical delivery drone or used in commercial residential operations." data-ar="المرحلة الحالية: فكرة + نموذج برمجي بالذكاء الاصطناعي + محاكاة. لا يدعي المشروع أن النظام الكامل تم نشره على درون توصيل حقيقية أو استخدامه في عمليات تجارية سكنية.">Current stage: concept + AI software prototype + simulation. The project does not claim that the complete system has already been deployed on a physical delivery drone or used in commercial residential operations.</p></div></div></section>
-
-<section><div class="container"><div class="highlight"><h2 data-en="Safety before delivery." data-ar="السلامة قبل التسليم.">Safety before delivery.</h2><p data-en="A successful delivery is not only a package reaching its destination — it is a package being delivered without creating an unsafe interaction." data-ar="نجاح التسليم ليس مجرد وصول الشحنة إلى وجهتها، بل وصولها دون خلق تفاعل غير آمن.">A successful delivery is not only a package reaching its destination — it is a package being delivered without creating an unsafe interaction.</p><div class="quote" data-en="Detect the hazard. Assess the situation. Protect the person. Then deliver." data-ar="اكتشف الخطر. قيّم الموقف. احمِ الشخص. ثم سلّم.">Detect the hazard. Assess the situation. Protect the person. Then deliver.</div></div></div></section>
-
-<section id="references"><div class="container"><div class="head"><div class="kicker">10 · REFERENCES</div><h2>References</h2></div><div class="refs"><div class="ref"><b>General Authority of Civil Aviation (GACA), Saudi Arabia</b><p>Regulatory and operational information related to unmanned aircraft systems and aviation safety.</p></div><div class="ref"><b>KAUST</b><p>Research and development related to autonomous systems and drone technologies.</p></div><div class="ref"><b>FalconViz</b><p>Autonomous aerial technology and drone applications.</p></div><div class="ref"><b>Amazon Prime Air</b><p>Public information regarding autonomous drone delivery and delivery safety technologies.</p></div><div class="ref"><b>Human–Drone Interaction Research</b><p>Research concerning safe interaction between humans and autonomous aerial systems.</p></div><div class="ref"><b>Computer Vision & Autonomous Landing Research</b><p>Research related to visual perception, object detection, tracking, obstacle awareness, and safe autonomous operation.</p></div></div></div></section>
-
-<footer><div class="container"><strong>HazardGuard Drone</strong><br>Wijdan Yahya Al-Khabrani · Occupational Health & Safety · 🇸🇦 Saudi Arabia<br><small>Independent Student Innovation · SAIF 2026</small></div></footer>
-<script>
-const btn=document.getElementById("langBtn");
-function setLang(lang){document.documentElement.lang=lang;document.documentElement.dir=lang==="ar"?"rtl":"ltr";document.querySelectorAll("[data-en]").forEach(e=>e.textContent=e.dataset[lang]);btn.textContent=lang==="ar"?"English":"العربية";localStorage.setItem("hgLang",lang)}
-setLang(localStorage.getItem("hgLang")||"en");btn.onclick=()=>setLang(document.documentElement.lang==="en"?"ar":"en");
-</script></body></html>
+<footer>
+  <div class="container">
+    <strong>HazardGuard Drone</strong><br>
+    Wijdan Yahya Al-Khabrani · Occupational Health & Safety · Saudi Arabia 🇸🇦
+    <div class="disclaimer">This is an independent student innovation concept with an AI software prototype and simulation. The current system is not presented as a deployed commercial drone service.</div>
+  </div>
+</footer>
+</body>
+</html>
