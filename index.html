@@ -12,7 +12,11 @@
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{font-family:Arial,Helvetica,sans-serif;background:linear-gradient(180deg,#07111f 0%,#09182a 45%,#06101c 100%);color:var(--text);line-height:1.65}
+body{font-family:Arial,Helvetica,sans-serif;background:linear-gradient(180deg,#07111f 0%,#09182a 45%,#06101c 100%);color:var(--text);line-height:1.65;position:relative;overflow-x:hidden}
+body::before,body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1}
+body::before{background-image:radial-gradient(2px 2px at 8% 18%,#fff,transparent),radial-gradient(1.5px 1.5px at 18% 72%,#fff,transparent),radial-gradient(2px 2px at 31% 28%,#fff,transparent),radial-gradient(1.5px 1.5px at 43% 84%,#fff,transparent),radial-gradient(2px 2px at 57% 14%,#fff,transparent),radial-gradient(1.5px 1.5px at 68% 62%,#fff,transparent),radial-gradient(2px 2px at 79% 31%,#fff,transparent),radial-gradient(1.5px 1.5px at 91% 76%,#fff,transparent),radial-gradient(2px 2px at 96% 12%,#fff,transparent);opacity:.7;animation:twinkle 5s ease-in-out infinite alternate}
+body::after{background-image:radial-gradient(1px 1px at 13% 44%,#fff,transparent),radial-gradient(1px 1px at 26% 91%,#fff,transparent),radial-gradient(1px 1px at 49% 48%,#fff,transparent),radial-gradient(1px 1px at 72% 89%,#fff,transparent),radial-gradient(1px 1px at 87% 57%,#fff,transparent);opacity:.45}
+@keyframes twinkle{from{opacity:.35}to{opacity:.85}}
 .container{width:min(1120px,92%);margin:auto}
 nav{position:sticky;top:0;z-index:10;background:rgba(7,17,31,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
 .nav-inner{display:flex;justify-content:space-between;align-items:center;padding:16px 0}
@@ -39,8 +43,16 @@ section{padding:64px 0}.section-title{text-align:center;margin-bottom:35px}.sect
 .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
 .step{text-align:center;padding:22px 15px;background:var(--card);border:1px solid var(--line);border-radius:16px}
 .num{font-size:13px;color:var(--accent);font-weight:800}.step h3{margin:8px 0}.step p{font-size:14px;color:var(--muted)}
-.media{border:1px solid var(--line);border-radius:18px;min-height:280px;display:flex;align-items:center;justify-content:center;text-align:center;background:#081827;overflow:hidden}
-.media img,.media video{width:100%;max-width:100%;height:auto;display:block;border-radius:18px}
+.media{border:1px solid var(--line);border-radius:18px;display:flex;align-items:center;justify-content:center;text-align:center;background:#081827;overflow:hidden;width:100%}
+.media img{width:100%;height:auto;display:block;border-radius:18px;object-fit:contain}
+.video-wrap{width:100%;aspect-ratio:16/9;background:#050d16}
+.media video{width:100%;height:100%;display:block;border-radius:18px;object-fit:contain}
+.latest-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.tech{background:linear-gradient(145deg,#0d1b2e,#091727);border:1px solid var(--line);border-radius:18px;padding:22px}
+.tech h3{margin-bottom:8px;color:var(--accent)}
+.tech p{color:var(--muted);font-size:15px}
+@media(max-width:800px){.latest-grid{grid-template-columns:1fr 1fr}.video-wrap{aspect-ratio:16/9}}
+@media(max-width:520px){.latest-grid{grid-template-columns:1fr}.media{border-radius:14px}.media img,.media video{border-radius:14px}}
 .flow{display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap;margin-top:25px}
 .flow span{padding:10px 14px;border-radius:10px;background:#10263d;border:1px solid #264b68;font-size:14px}.arrow{color:var(--accent);font-weight:800}
 footer{border-top:1px solid var(--line);padding:35px 0;text-align:center;color:var(--muted)}.disclaimer{font-size:13px;color:#8fa7bb;margin-top:12px}
@@ -56,6 +68,7 @@ footer{border-top:1px solid var(--line);padding:35px 0;text-align:center;color:v
       <a href="#overview">Overview</a>
       <a href="#how">How It Works</a>
       <a href="#simulation">Simulation</a>
+      <a href="#latest-development">Latest Development</a>
       <a href="#references">References</a>
     </div>
   </div>
@@ -135,6 +148,29 @@ footer{border-top:1px solid var(--line);padding:35px 0;text-align:center;color:v
   </div>
 </section>
 
+<section id="latest-development">
+  <div class="container">
+    <div class="section-title">
+      <h2>Latest Programming Development</h2>
+      <p>The latest software work completed for the HazardGuard Drone proof of concept.</p>
+    </div>
+    <div class="latest-grid">
+      <div class="tech"><h3>📏 Distance Calculation</h3><p>Programming was developed to calculate and evaluate the distance between the drone and detected people, vehicles, animals and obstacles, so the decision is based on proximity rather than detection alone.</p></div>
+      <div class="tech"><h3>🧠 Risk Analysis Engine</h3><p>The safety logic combines object type, distance, movement and route conflict to determine the current level of delivery risk.</p></div>
+      <div class="tech"><h3>🚦 Safety Decisions</h3><p>The system can issue SAFE, WAIT, STOP, HOLD, AVOID or ABORT DELIVERY decisions according to changing conditions.</p></div>
+      <div class="tech"><h3>🎯 Object Tracking</h3><p>Detected objects are tracked across video frames to monitor movement and identify changing conditions around the drone.</p></div>
+      <div class="tech"><h3>🛣️ Dynamic Rerouting</h3><p>When the planned path becomes unsafe, the simulation can evaluate a safer route and change the drone path before a predicted conflict.</p></div>
+      <div class="tech"><h3>📍 GPS & Mission State</h3><p>The simulator includes GPS position and mission-state logic so the drone can move through takeoff, navigation, delivery, return and landing stages.</p></div>
+      <div class="tech"><h3>📡 Signal & Battery Checks</h3><p>Signal and battery conditions are included in the simulated mission monitoring instead of treating the flight path as the only safety factor.</p></div>
+      <div class="tech"><h3>📦 Package Logic</h3><p>The package remains attached during the mission, is handed over at the delivery point, and the drone then performs a safety recheck before returning to base.</p></div>
+      <div class="tech"><h3>📝 Movement Log</h3><p>Important movement, hazard and decision events can be recorded to make the simulation easier to inspect and evaluate.</p></div>
+      <div class="tech"><h3>👤 Recipient Safety</h3><p>The concept includes guidance toward a designated safe collection position and pauses the delivery when the interaction area is not safe.</p></div>
+      <div class="tech"><h3>🔄 Full Mission Flow</h3><p>Depot → package loading → takeoff → AI route → hazard monitoring → delivery → post-delivery safety check → return-to-base → landing → completion.</p></div>
+      <div class="tech"><h3>💻 Current PoC</h3><p>The current implementation is a software simulation/proof of concept built to demonstrate the proposed AI safety workflow before any future controlled real-drone testing.</p></div>
+    </div>
+  </div>
+</section>
+
 <section id="simulation">
   <div class="container">
     <div class="section-title">
@@ -145,10 +181,12 @@ footer{border-top:1px solid var(--line);padding:35px 0;text-align:center;color:v
       <img src="concept.png" alt="HazardGuard Drone Concept Image">
     </div>
     <div class="media">
-      <video controls poster="concept.png">
+      <div class="video-wrap">
+      <video controls playsinline preload="metadata" poster="concept.png">
         <source src="simulation.mp4" type="video/mp4">
         Your browser does not support the video tag.
       </video>
+      </div>
     </div>
     <p style="text-align:center;color:var(--muted);font-size:13px;margin-top:12px;">The simulation illustrates the intended workflow; it does not claim commercial deployment of the complete system.</p>
   </div>
