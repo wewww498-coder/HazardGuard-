@@ -225,12 +225,10 @@ function analyzeRoute(name){
 
 function chooseSafeRoute(){
   const options=["DIRECT","LEFT","RIGHT"];
-
-  let best=null;
+  const candidates=[];
 
   for(const name of options){
     const a=analyzeRoute(name);
-
     const pts=routePoints(name);
     let length=0;
 
@@ -246,38 +244,50 @@ function chooseSafeRoute(){
     const current=a?a.currentMin:999;
 
     /*
-      المسار الآمن يأخذ الأولوية.
-      المسافة الأقصر تستخدم فقط للمفاضلة بين المسارات الآمنة.
+      أولًا نحدد هل المسار آمن فعلًا.
+      المسار الآمن يجب أن:
+      - لا يحتوي تعارضًا حاليًا قريبًا.
+      - لا يتوقع تعارضًا قريبًا.
+      - لا يصل إلى مستوى WAIT/STOP بسبب الخطر.
     */
-    const unsafePenalty=
-      risk>=75 ? 100000 :
-      risk>=45 ? 25000 :
-      0;
+    const safe =
+      risk < 43 &&
+      predicted > 65 &&
+      current > 48;
 
-    const clearancePenalty=
-      predicted<70 ? (70-predicted)*120 :
-      0;
-
-    const score=
-      length+
-      unsafePenalty+
-      clearancePenalty+
-      risk*8;
-
-    const candidate={
+    candidates.push({
       name,
       analysis:a,
-      score,
       length,
+      risk,
+      predicted,
       current,
-      predicted
-    };
-
-    if(!best || candidate.score<best.score)
-      best=candidate;
+      safe
+    });
   }
 
-  return best;
+  /*
+    أهم قاعدة:
+    إذا وُجد أكثر من مسار آمن، نختار الأقصر فقط.
+    لا نعطي المسار الأطول أفضلية بسبب رقم risk أقل بفارق بسيط.
+  */
+  const safeRoutes=candidates
+    .filter(x=>x.safe)
+    .sort((a,b)=>a.length-b.length);
+
+  if(safeRoutes.length>0){
+    return safeRoutes[0];
+  }
+
+  /*
+    إذا لم يوجد أي مسار آمن:
+    لا نرسل الدرون لمسار طويل لمجرد أنه "أقل خطورة".
+    نختار المسار الأقل خطورة فقط كخطة مؤقتة، مع بقاء القرار WAIT/STOP.
+  */
+  return candidates.sort((a,b)=>{
+    if(a.risk!==b.risk) return a.risk-b.risk;
+    return a.length-b.length;
+  })[0];
 }
 
 function setDecision(level,action,reason){
