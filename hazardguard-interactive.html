@@ -40,6 +40,7 @@ let routeName="DIRECT",forceRoute=false;
 let decisionLevel="SAFE",decisionAction="FLY";
 let waitSince=0,safeSince=0,lastLoggedDecision="";
 let routeLockUntil=0;
+let routePlan=[],routeIndex=0;
 
 const drone={x:90,y:570,vx:0,vy:0,speed:72,r:11};
 const target={x:875,y:85};
@@ -53,23 +54,23 @@ const hazards=[
 ];
 
 function reset(){
-  drone.x=90; drone.y=570; drone.vx=0; drone.vy=0;
-  simTime=0; done=false; paused=false; replans=0;
-  routeName="DIRECT"; forceRoute=false;
-  decisionLevel="SAFE"; decisionAction="FLY";
-  waitSince=0; safeSince=0; lastLoggedDecision="";
-  routeLockUntil=0;
+  drone.x=90;drone.y=570;drone.vx=0;drone.vy=0;
+  simTime=0;done=false;paused=false;replans=0;
+  routeName="DIRECT";forceRoute=false;
+  decisionLevel="SAFE";decisionAction="FLY";
+  waitSince=0;safeSince=0;lastLoggedDecision="";
+  routeLockUntil=0;routePlan=[];routeIndex=0;
   hazards.forEach((h,i)=>{
     h.active=h.spawn?false:true;
     h.x=[180,760,460,660,900][i];
     h.y=[345,360,250,505,160][i];
   });
+  rebuildPlan();
   logMsg("Mission reset.");
 }
 
 function logMsg(s){
-  const el=document.getElementById("log");
-  const d=document.createElement("div");
+  const el=document.getElementById("log"),d=document.createElement("div");
   d.textContent=new Date().toLocaleTimeString()+" · "+s;
   el.prepend(d);
   while(el.children.length>28)el.lastChild.remove();
@@ -85,18 +86,12 @@ function pointSeg(px,py,ax,ay,bx,by){
 }
 
 function candidateWaypoints(name){
-  if(name==="DIRECT"){
-    return [{x:target.x,y:target.y}];
-  }
-
-  if(name==="LEFT"){
-    return [
-      {x:drone.x+100,y:Math.max(90,drone.y-175)},
-      {x:target.x-80,y:Math.max(100,target.y+100)},
-      {x:target.x,y:target.y}
-    ];
-  }
-
+  if(name==="DIRECT")return [{x:target.x,y:target.y}];
+  if(name==="LEFT")return [
+    {x:drone.x+100,y:Math.max(90,drone.y-175)},
+    {x:target.x-80,y:Math.max(100,target.y+100)},
+    {x:target.x,y:target.y}
+  ];
   return [
     {x:drone.x+120,y:Math.min(H-95,drone.y+150)},
     {x:target.x-110,y:Math.min(H-100,target.y+150)},
@@ -108,465 +103,208 @@ function routePoints(name){
   return [{x:drone.x,y:drone.y},...candidateWaypoints(name)];
 }
 
-function segmentDistance(px,py,a,b){
-  return pointSeg(px,py,a.x,a.y,b.x,b.y);
-}
-
 function predictPoint(h,t){
-  return {
-    x:h.x+h.vx*t,
-    y:h.y+h.vy*t
-  };
+  return {x:h.x+h.vx*t,y:h.y+h.vy*t};
 }
 
-/*
-  تحليل المسار الجديد:
-  لا ننظر فقط لأقرب جسم.
-  نفحص كل جسم مقابل كامل المسار، وننظر إلى موقعه المتوقع خلال
-  0.5 / 1 / 1.5 / 2 / 2.5 ثانية.
-*/
 function analyzeRoute(name){
   const pts=routePoints(name);
   let worst=null;
 
   for(const h of hazards){
-    if(!h.active) continue;
+    if(!h.active)continue;
 
-    let currentMin=Infinity;
-    let predictedMin=Infinity;
-    let conflictTime=Infinity;
+    let currentMin=Infinity,predictedMin=Infinity,conflictTime=Infinity;
 
     for(let s=0;s<pts.length-1;s++){
-      const a=pts[s],b=pts[s+1];
-
-      currentMin=Math.min(
-        currentMin,
-        segmentDistance(h.x,h.y,a,b)-h.r
-      );
+      const p1=pts[s],p2=pts[s+1];
+      currentMin=Math.min(currentMin,pointSeg(h.x,h.y,p1.x,p1.y,p2.x,p2.y)-h.r);
 
       for(const t of [0.5,1,1.5,2,2.5]){
         const p=predictPoint(h,t);
-        const d=segmentDistance(p.x,p.y,a,b)-h.r;
-
-        if(d<predictedMin){
-          predictedMin=d;
-          conflictTime=t;
-        }
+        const d=pointSeg(p.x,p.y,p1.x,p1.y,p2.x,p2.y)-h.r;
+        if(d<predictedMin){predictedMin=d;conflictTime=t}
       }
     }
 
-    const droneDistance=dist(drone,h);
-
-    let relativeSpeed=Math.hypot(
-      h.vx-drone.vx,
-      h.vy-drone.vy
-    );
-
-    let closingSpeed=0;
-
-    if(droneDistance>1){
-      const rx=h.x-drone.x;
-      const ry=h.y-drone.y;
-      closingSpeed=Math.max(
-        0,
-        -((rx*(h.vx-drone.vx))+
-          (ry*(h.vy-drone.vy))) /
-        droneDistance
-      );
+    const d=dist(drone,h);
+    const rvx=h.vx-drone.vx,rvy=h.vy-drone.vy;
+    const rel=Math.hypot(rvx,rvy);
+    let closing=0;
+    if(d>1){
+      closing=Math.max(0,-((h.x-drone.x)*rvx+(h.y-drone.y)*rvy)/d);
     }
-
-    const ttc=closingSpeed>0
-      ?droneDistance/closingSpeed
-      :Infinity;
+    const ttc=closing>0?d/closing:Infinity;
 
     let risk=0;
-
-    if(currentMin<120)
-      risk+=clamp((120-currentMin)*0.32,0,32);
-
-    if(predictedMin<100)
-      risk+=clamp((100-predictedMin)*0.55,0,42);
-
-    if(predictedMin<45)
-      risk+=25;
-
-    if(ttc<4)
-      risk+=clamp((4-ttc)*10,0,35);
-
-    if(h.type==="person")
-      risk+=8;
-
-    if(h.type==="car")
-      risk+=6;
-
-    if(h.type==="bird" && conflictTime<1.5)
-      risk+=8;
-
+    if(currentMin<120)risk+=clamp((120-currentMin)*.32,0,32);
+    if(predictedMin<100)risk+=clamp((100-predictedMin)*.55,0,42);
+    if(predictedMin<45)risk+=25;
+    if(ttc<4)risk+=clamp((4-ttc)*10,0,35);
+    if(h.type==="person")risk+=8;
+    if(h.type==="car")risk+=6;
+    if(h.type==="bird"&&conflictTime<1.5)risk+=8;
     risk=clamp(risk,0,100);
 
-    const item={
-      h,
-      risk,
-      currentMin,
-      predictedMin,
-      conflictTime,
-      distance:droneDistance,
-      relativeSpeed,
-      closingSpeed,
-      ttc
-    };
-
-    if(!worst || item.risk>worst.risk)
-      worst=item;
+    const item={h,risk,currentMin,predictedMin,conflictTime,d,rel,closing,ttc};
+    if(!worst||item.risk>worst.risk)worst=item;
   }
-
   return worst;
 }
 
 function chooseSafeRoute(){
-  const options=["DIRECT","LEFT","RIGHT"];
-  const candidates=[];
+  const options=["DIRECT","LEFT","RIGHT"],candidates=[];
 
   for(const name of options){
-    const a=analyzeRoute(name);
-    const pts=routePoints(name);
+    const an=analyzeRoute(name),pts=routePoints(name);
     let length=0;
+    for(let i=0;i<pts.length-1;i++)length+=Math.hypot(pts[i+1].x-pts[i].x,pts[i+1].y-pts[i].y);
 
-    for(let i=0;i<pts.length-1;i++){
-      length+=Math.hypot(
-        pts[i+1].x-pts[i].x,
-        pts[i+1].y-pts[i].y
-      );
-    }
-
-    const risk=a?a.risk:0;
-    const predicted=a?a.predictedMin:999;
-    const current=a?a.currentMin:999;
-
-    /*
-      أولًا نحدد هل المسار آمن فعلًا.
-      المسار الآمن يجب أن:
-      - لا يحتوي تعارضًا حاليًا قريبًا.
-      - لا يتوقع تعارضًا قريبًا.
-      - لا يصل إلى مستوى WAIT/STOP بسبب الخطر.
-    */
-    const safe =
-      risk < 43 &&
-      predicted > 65 &&
-      current > 48;
-
-    candidates.push({
-      name,
-      analysis:a,
-      length,
-      risk,
-      predicted,
-      current,
-      safe
-    });
+    const risk=an?an.risk:0,pred=an?an.predictedMin:999,current=an?an.currentMin:999;
+    const safe=risk<43&&pred>65&&current>48;
+    candidates.push({name,analysis:an,length,risk,pred,current,safe});
   }
 
-  /*
-    أهم قاعدة:
-    إذا وُجد أكثر من مسار آمن، نختار الأقصر فقط.
-    لا نعطي المسار الأطول أفضلية بسبب رقم risk أقل بفارق بسيط.
-  */
-  const safeRoutes=candidates
-    .filter(x=>x.safe)
-    .sort((a,b)=>a.length-b.length);
+  const safe=candidates.filter(x=>x.safe).sort((x,y)=>x.length-y.length);
+  if(safe.length)return safe[0];
 
-  if(safeRoutes.length>0){
-    return safeRoutes[0];
-  }
-
-  /*
-    إذا لم يوجد أي مسار آمن:
-    لا نرسل الدرون لمسار طويل لمجرد أنه "أقل خطورة".
-    نختار المسار الأقل خطورة فقط كخطة مؤقتة، مع بقاء القرار WAIT/STOP.
-  */
-  return candidates.sort((a,b)=>{
-    if(a.risk!==b.risk) return a.risk-b.risk;
-    return a.length-b.length;
-  })[0];
+  return candidates.sort((x,y)=>x.risk-y.risk||x.length-y.length)[0];
 }
 
-function setDecision(level,action,reason){
-  const changed=
-    level!==decisionLevel ||
-    action!==decisionAction;
+function buildPlan(name){
+  const pts=candidateWaypoints(name).map(p=>({x:p.x,y:p.y}));
+  routePlan=pts;
+  routeIndex=0;
+}
 
-  decisionLevel=level;
-  decisionAction=action;
+function rebuildPlan(){
+  buildPlan(routeName);
+}
 
-  if(changed){
-    const key=level+"|"+action;
-
-    if(key!==lastLoggedDecision){
-      lastLoggedDecision=key;
-      logMsg(
-        "Decision: "+
-        level+
-        " → "+
-        action+
-        (reason?" · "+reason:"")
-      );
-    }
-  }
+function currentWaypoint(){
+  return routePlan[routeIndex]||target;
 }
 
 function changeRoute(newRoute,reason){
-  if(newRoute===routeName) return false;
-
+  if(newRoute===routeName)return false;
   const old=routeName;
   routeName=newRoute;
   replans++;
-
-  /*
-    يمنع تبديل المسار عشرات المرات في نفس الثانية.
-  */
-  routeLockUntil=simTime+0.75;
-
-  logMsg(
-    "Route changed: "+
-    old+
-    " → "+
-    newRoute+
-    " · "+
-    reason
-  );
-
+  routeLockUntil=simTime+.75;
+  buildPlan(newRoute);
+  logMsg("Route changed: "+old+" → "+newRoute+" · "+reason);
   return true;
 }
 
-function evaluateDecision(dt){
+function setDecision(level,action,reason){
+  const changed=level!==decisionLevel||action!==decisionAction;
+  decisionLevel=level;decisionAction=action;
+  if(changed){
+    const key=level+"|"+action;
+    if(key!==lastLoggedDecision){
+      lastLoggedDecision=key;
+      logMsg("Decision: "+level+" → "+action+(reason?" · "+reason:""));
+    }
+  }
+}
+
+function evaluateDecision(){
   const current=analyzeRoute(routeName);
-
   const risk=current?current.risk:0;
-  const predicted=current?current.predictedMin:999;
-  const currentClear=current?current.currentMin:999;
+  const pred=current?current.predictedMin:999;
+  const clear=current?current.currentMin:999;
 
-  /*
-    STOP:
-    خطر قريب جدًا أو تعارض متوقع شديد.
-  */
-  if(
-    (current && predicted<25) ||
-    risk>=82
-  ){
-    waitSince=0;
-    safeSince=0;
-
-    setDecision(
-      "STOP",
-      "HOLD / ABORT",
-      "critical route conflict"
-    );
-
+  if((current&&pred<25)||risk>=82){
+    waitSince=0;safeSince=0;
+    setDecision("STOP","HOLD / ABORT","critical route conflict");
     return current;
   }
 
-  /*
-    WAIT:
-    الخطر موجود لكن ما وصل لمرحلة التوقف الكامل.
-  */
-  if(
-    risk>=43 ||
-    predicted<65 ||
-    currentClear<48
-  ){
+  if(risk>=43||pred<65||clear<48){
     safeSince=0;
+    if(waitSince===0)waitSince=simTime;
 
-    if(waitSince===0)
-      waitSince=simTime;
-
-    /*
-      أول لحظة: WAIT.
-      إذا استمر التعارض: نبحث عن مسار بديل.
-    */
-    if(
-      simTime-waitSince>=0.45 &&
-      simTime>=routeLockUntil
-    ){
+    if(simTime-waitSince>=.45&&simTime>=routeLockUntil){
       const best=chooseSafeRoute();
 
-      if(
-        best &&
-        best.name!==routeName &&
-        best.analysis &&
-        best.analysis.risk<43 &&
-        best.analysis.predictedMin>65
-      ){
-        changeRoute(
-          best.name,
-          "predicted conflict on current route"
-        );
-
-        setDecision(
-          "WAIT",
-          "REROUTE",
-          "current route is unsafe"
-        );
+      if(best&&best.name!==routeName&&best.safe){
+        changeRoute(best.name,"shortest safe route selected");
+        setDecision("WAIT","REROUTE","current route conflict");
       }else{
-        setDecision(
-          "WAIT",
-          "WAIT",
-          "re-evaluating moving hazard"
-        );
+        setDecision("WAIT","WAIT","rechecking moving hazard");
       }
     }else{
-      setDecision(
-        "WAIT",
-        "WAIT",
-        "hazard detected on route"
-      );
+      setDecision("WAIT","WAIT","hazard detected on route");
     }
-
     return current;
   }
 
-  /*
-    SAFE:
-    لا يوجد تعارض حقيقي أو متوقع.
-  */
   waitSince=0;
+  if(safeSince===0)safeSince=simTime;
 
-  if(safeSince===0)
-    safeSince=simTime;
-
-  /*
-    لا نرجع DIRECT فورًا.
-    لازم يبقى المسار آمنًا لفترة قصيرة حتى لا يحصل
-    تبديل سريع ذهابًا وإيابًا.
-  */
-  if(
-    routeName!=="DIRECT" &&
-    simTime>=routeLockUntil &&
-    simTime-safeSince>=1.1
-  ){
+  if(routeName!=="DIRECT"&&simTime>=routeLockUntil&&simTime-safeSince>=1.1){
     const direct=analyzeRoute("DIRECT");
-
-    if(
-      !direct ||
-      (
-        direct.risk<30 &&
-        direct.predictedMin>85
-      )
-    ){
-      changeRoute(
-        "DIRECT",
-        "direct route became clear"
-      );
+    if(!direct||direct.risk<30&&direct.predictedMin>85){
+      changeRoute("DIRECT","direct route became clear");
     }
   }
 
-  setDecision(
-    "SAFE",
-    "FLY",
-    "route clear"
-  );
-
+  setDecision("SAFE","FLY","route clear");
   return current;
 }
 
 function update(dt){
-
   simTime+=dt;
 
-  /*
-    حركة مستقلة تمامًا لكل خطر.
-  */
   hazards.forEach(h=>{
-
-    if(
-      h.spawn &&
-      !h.active &&
-      simTime>=h.spawn
-    ){
+    if(h.spawn&&!h.active&&simTime>=h.spawn){
       h.active=true;
       logMsg("BIRD-01 entered the monitored area.");
     }
-
-    if(!h.active) return;
-
+    if(!h.active)return;
     h.x+=h.vx*dt*speedMul;
     h.y+=h.vy*dt*speedMul;
 
-    if(
-      h.type==="car" &&
-      (h.x<90 || h.x>930)
-    ){
-      h.vx*=-1;
-    }
-
-    if(
-      h.type==="animal" &&
-      (h.x<520 || h.x>800)
-    ){
-      h.vx*=-1;
-    }
-
-    if(
-      h.type==="person" &&
-      (h.y<170 || h.y>330)
-    ){
-      h.vy*=-1;
-    }
-
-    if(
-      h.type==="bird" &&
-      (h.x<520 || h.x>950)
-    ){
-      h.vx*=-1;
-    }
-
+    if(h.type==="car"&&(h.x<90||h.x>930))h.vx*=-1;
+    if(h.type==="animal"&&(h.x<520||h.x>800))h.vx*=-1;
+    if(h.type==="person"&&(h.y<170||h.y>330))h.vy*=-1;
+    if(h.type==="bird"&&(h.x<520||h.x>950))h.vx*=-1;
   });
 
+  evaluateDecision();
+
   /*
-    التحليل واتخاذ القرار مربوطان مباشرة بحركة الدرون.
+    الحركة الآن مرتبطة بخطة ثابتة:
+    الدرون يصل للـ waypoint الحالية أولًا،
+    ثم ينتقل للنقطة التالية.
+    لا يقفز مباشرة إلى target ولا يقطع المسار.
   */
-  const a=evaluateDecision(dt);
+  let p=currentWaypoint();
+  let dx=p.x-drone.x,dy=p.y-drone.y,len=Math.hypot(dx,dy)||1;
 
-  const p=routePoints(routeName)[1] || target;
-
-  const dx=p.x-drone.x;
-  const dy=p.y-drone.y;
-  const len=Math.hypot(dx,dy)||1;
+  if(
+    len<12 &&
+    routeIndex<routePlan.length-1
+  ){
+    routeIndex++;
+    p=currentWaypoint();
+    dx=p.x-drone.x;
+    dy=p.y-drone.y;
+    len=Math.hypot(dx,dy)||1;
+  }
 
   let desired=drone.speed*speedMul;
 
-  if(decisionLevel==="STOP"){
-    desired=0;
-  }
-  else if(
-    decisionLevel==="WAIT" &&
-    decisionAction==="WAIT"
-  ){
-    /*
-      الدرون لا يواصل بسرعة طبيعية أثناء WAIT.
-    */
-    desired=5;
-  }
-  else if(decisionAction==="REROUTE"){
-    desired=drone.speed*0.78*speedMul;
-  }
+  if(decisionLevel==="STOP")desired=0;
+  else if(decisionLevel==="WAIT"&&decisionAction==="WAIT")desired=4;
+  else if(decisionAction==="REROUTE")desired=drone.speed*.72*speedMul;
 
-  const desiredVx=(dx/len)*desired;
-  const desiredVy=(dy/len)*desired;
+  const desiredVx=dx/len*desired;
+  const desiredVy=dy/len*desired;
+  const response=decisionLevel==="STOP"?Math.min(1,dt*10):Math.min(1,dt*8);
 
-  /*
-    استجابة حركة ناعمة وسريعة.
-    لا ننتظر عدة ثوانٍ حتى يستجيب الدرون.
-  */
-  const response=
-    decisionLevel==="STOP"
-      ?Math.min(1,dt*10)
-      :Math.min(1,dt*7);
-
-  drone.vx+=
-    (desiredVx-drone.vx)*response;
-
-  drone.vy+=
-    (desiredVy-drone.vy)*response;
+  drone.vx+=(desiredVx-drone.vx)*response;
+  drone.vy+=(desiredVy-drone.vy)*response;
 
   if(decisionLevel==="STOP"){
     drone.vx*=Math.max(0,1-dt*8);
@@ -575,27 +313,14 @@ function update(dt){
 
   drone.x+=drone.vx*dt;
   drone.y+=drone.vy*dt;
-
-  /*
-    منع الدرون من الخروج من منطقة المحاكاة.
-  */
   drone.x=clamp(drone.x,30,W-30);
   drone.y=clamp(drone.y,30,H-30);
 
-  if(
-    Math.hypot(
-      target.x-drone.x,
-      target.y-drone.y
-    )<22
-  ){
-    drone.x=target.x;
-    drone.y=target.y;
-
+  if(Math.hypot(target.x-drone.x,target.y-drone.y)<22){
+    drone.x=target.x;drone.y=target.y;
     if(!done){
       done=true;
-      logMsg(
-        "Delivery point reached. Final safety recheck completed."
-      );
+      logMsg("Delivery point reached. Final safety recheck completed.");
     }
   }
 }
