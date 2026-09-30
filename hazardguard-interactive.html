@@ -214,42 +214,135 @@ function evaluateDecision(){
   const pred=current?current.predictedMin:999;
   const clear=current?current.currentMin:999;
 
+  /*
+    مهم:
+    قبل إصدار STOP نفحص هل يوجد مسار بديل آمن.
+    إذا وجد، نغيّر المسار فورًا بدل تجميد الدرون.
+  */
+  const currentUnsafe =
+    risk>=43 ||
+    pred<65 ||
+    clear<48;
+
+  if(currentUnsafe && simTime>=routeLockUntil){
+    const best=chooseSafeRoute();
+
+    if(
+      best &&
+      best.name!==routeName &&
+      best.safe
+    ){
+      changeRoute(
+        best.name,
+        "shortest safe route selected"
+      );
+
+      waitSince=0;
+      safeSince=0;
+
+      setDecision(
+        "WAIT",
+        "REROUTE",
+        "safe alternative found"
+      );
+
+      return analyzeRoute(routeName);
+    }
+  }
+
+  /*
+    STOP فقط عندما لا يوجد مسار آمن بديل
+    أو عندما يكون الخطر حرجًا جدًا.
+  */
   if((current&&pred<25)||risk>=82){
-    waitSince=0;safeSince=0;
-    setDecision("STOP","HOLD / ABORT","critical route conflict");
-    return current;
-  }
+    const best=chooseSafeRoute();
 
-  if(risk>=43||pred<65||clear<48){
+    if(
+      best &&
+      best.name!==routeName &&
+      best.safe
+    ){
+      changeRoute(
+        best.name,
+        "critical conflict avoided by rerouting"
+      );
+
+      setDecision(
+        "WAIT",
+        "REROUTE",
+        "critical route avoided"
+      );
+
+      return analyzeRoute(routeName);
+    }
+
+    waitSince=0;
     safeSince=0;
-    if(waitSince===0)waitSince=simTime;
 
-    if(simTime-waitSince>=.45&&simTime>=routeLockUntil){
-      const best=chooseSafeRoute();
+    setDecision(
+      "STOP",
+      "HOLD / ABORT",
+      "no safe route available"
+    );
 
-      if(best&&best.name!==routeName&&best.safe){
-        changeRoute(best.name,"shortest safe route selected");
-        setDecision("WAIT","REROUTE","current route conflict");
-      }else{
-        setDecision("WAIT","WAIT","rechecking moving hazard");
-      }
-    }else{
-      setDecision("WAIT","WAIT","hazard detected on route");
-    }
     return current;
   }
 
-  waitSince=0;
-  if(safeSince===0)safeSince=simTime;
+  if(currentUnsafe){
+    safeSince=0;
 
-  if(routeName!=="DIRECT"&&simTime>=routeLockUntil&&simTime-safeSince>=1.1){
+    if(waitSince===0)
+      waitSince=simTime;
+
+    setDecision(
+      "WAIT",
+      "WAIT",
+      "rechecking moving hazard"
+    );
+
+    return current;
+  }
+
+  /*
+    SAFE:
+    المسار الحالي آمن، لذلك يتحرك الدرون.
+  */
+  waitSince=0;
+
+  if(safeSince===0)
+    safeSince=simTime;
+
+  /*
+    العودة إلى DIRECT فقط بعد أن يصبح المسار المباشر
+    آمنًا لفترة قصيرة.
+  */
+  if(
+    routeName!=="DIRECT" &&
+    simTime>=routeLockUntil &&
+    simTime-safeSince>=1.1
+  ){
     const direct=analyzeRoute("DIRECT");
-    if(!direct||direct.risk<30&&direct.predictedMin>85){
-      changeRoute("DIRECT","direct route became clear");
+
+    if(
+      !direct ||
+      (
+        direct.risk<30 &&
+        direct.predictedMin>85
+      )
+    ){
+      changeRoute(
+        "DIRECT",
+        "direct route became clear"
+      );
     }
   }
 
-  setDecision("SAFE","FLY","route clear");
+  setDecision(
+    "SAFE",
+    "FLY",
+    "route clear"
+  );
+
   return current;
 }
 
