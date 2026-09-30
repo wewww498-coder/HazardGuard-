@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>HazardGuard Drone | Interactive Safety Simulation</title>
+<style>
+:root{--bg:#030913;--panel:#081827;--panel2:#0b2033;--line:#21415d;--text:#f3f8ff;--muted:#9eb5c9;--cyan:#4cc9f0;--green:#42e695;--yellow:#ffd166;--red:#ff5c7a}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Arial,"Segoe UI",sans-serif;background:radial-gradient(circle at 50% 0,#12365a 0,transparent 42%),linear-gradient(180deg,#030913,#071525 65%,#02070d);color:var(--text)}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.55;background-image:radial-gradient(2px 2px at 8% 18%,#fff,transparent),radial-gradient(1.5px 1.5px at 22% 72%,#fff,transparent),radial-gradient(2px 2px at 42% 24%,#fff,transparent),radial-gradient(1.5px 1.5px at 67% 62%,#fff,transparent),radial-gradient(2px 2px at 87% 30%,#fff,transparent)}
+.container{width:min(1420px,94%);margin:auto}.top{padding:24px 0 16px;display:flex;justify-content:space-between;align-items:center;gap:15px}.brand{font-weight:900;font-size:20px}.brand span{color:var(--cyan)}.back,.lang{border:1px solid #31536f;background:#0b1b2d;color:#fff;border-radius:10px;padding:10px 14px;text-decoration:none;font-weight:800;cursor:pointer}.back:hover,.lang:hover{border-color:var(--cyan)}
+.hero{text-align:center;padding:30px 0 25px}.badge{display:inline-block;border:1px solid #2d5877;background:#0a1c2e;color:var(--cyan);border-radius:999px;padding:7px 14px;font-size:12px;font-weight:800}.hero h1{font-size:clamp(34px,5vw,62px);margin:18px 0 8px}.hero h1 span{color:var(--cyan)}.hero p{max-width:760px;margin:auto;color:var(--muted)}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:18px;align-items:start}.stage{background:#040b13;border:1px solid rgba(76,201,240,.28);border-radius:18px;padding:10px;box-shadow:0 22px 70px rgba(0,0,0,.35)}canvas{display:block;width:100%;height:auto;border-radius:12px;background:#07111b}
+.side{display:flex;flex-direction:column;gap:12px}.panel{background:linear-gradient(145deg,rgba(14,29,49,.96),rgba(6,18,32,.96));border:1px solid rgba(55,91,119,.7);border-radius:16px;padding:16px}.panel h3{margin:0 0 10px;font-size:14px;color:var(--cyan);letter-spacing:.3px}.status{font-size:24px;font-weight:900}.status.safe{color:var(--green)}.status.wait{color:var(--yellow)}.status.stop{color:var(--red)}.metric{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid rgba(55,91,119,.3);font-size:13px}.metric:last-child{border-bottom:0}.metric span:first-child{color:var(--muted)}.metric strong{font-variant-numeric:tabular-nums}.riskbar{height:8px;border-radius:99px;background:#10263d;overflow:hidden;margin:8px 0}.riskfill{height:100%;width:0%;background:var(--green);transition:.2s}.controls{display:grid;grid-template-columns:1fr 1fr;gap:8px}.controls button{padding:10px;border-radius:9px;border:1px solid #31536f;background:#0b1b2d;color:#fff;font-weight:800;cursor:pointer}.controls button:hover{border-color:var(--cyan);transform:translateY(-1px)}.controls .primary{background:var(--cyan);color:#03101b;border-color:var(--cyan)}.log{max-height:170px;overflow:auto;font-size:11px;line-height:1.5;color:#b8ccdd}.log div{padding:4px 0;border-bottom:1px solid rgba(55,91,119,.22)}.legend{display:grid;grid-template-columns:1fr 1fr;gap:7px;font-size:11px;color:var(--muted)}.legend span{display:flex;align-items:center;gap:6px}.dot{width:9px;height:9px;border-radius:50%;display:inline-block}.note{margin:18px 0 40px;text-align:center;color:var(--muted);font-size:12px}.kbd{color:var(--cyan)}
+html[dir=rtl] body{text-align:right}
+@media(max-width:1000px){.layout{grid-template-columns:1fr}.side{display:grid;grid-template-columns:repeat(2,1fr)}.panel.logpanel{grid-column:1/-1}}
+@media(max-width:650px){.top{align-items:flex-start}.side{grid-template-columns:1fr}.hero{padding-top:15px}.hero h1{font-size:36px}.controls{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="container">
+<header class="top"><div class="brand">Hazard<span>Guard</span> Drone</div><div><a class="back" href="index.html" id="back">← Back to Project</a> <button class="lang" id="lang">العربية</button></div></header>
+<section class="hero"><div class="badge" id="badge">INTERACTIVE SOFTWARE SIMULATION · PROOF OF CONCEPT</div><h1>Hazard<span>Guard</span> Interactive</h1><p id="intro">Explore how distance, movement, predicted conflict and route safety can influence a delivery decision.</p></section>
+<main class="layout">
+<div class="stage"><canvas id="sim" width="1000" height="650"></canvas></div>
+<aside class="side">
+<div class="panel"><h3 id="statusTitle">SAFETY STATUS</h3><div id="status" class="status safe">SAFE</div><div id="action">FLY</div><div class="riskbar"><div id="riskfill" class="riskfill"></div></div><div class="metric"><span>Risk</span><strong id="risk">0</strong></div><div class="metric"><span>Threat</span><strong id="threat">None</strong></div></div>
+<div class="panel"><h3 id="analysisTitle">LIVE ANALYSIS</h3><div class="metric"><span>Distance</span><strong id="dist">—</strong></div><div class="metric"><span>Predicted distance</span><strong id="pred">—</strong></div><div class="metric"><span>Closing speed</span><strong id="close">—</strong></div><div class="metric"><span>Relative speed</span><strong id="rel">—</strong></div><div class="metric"><span>TTC</span><strong id="ttc">—</strong></div><div class="metric"><span>Route</span><strong id="route">DIRECT</strong></div><div class="metric"><span>Replans</span><strong id="replans">0</strong></div></div>
+<div class="panel"><h3 id="controlsTitle">CONTROLS</h3><div class="controls"><button class="primary" id="pause">Pause</button><button id="reset">Reset</button><button id="reroute">Force Reroute</button><button id="speed">Speed ×1</button></div><p style="margin:9px 0 0;color:var(--muted);font-size:11px"><span class="kbd">SPACE</span> pause · <span class="kbd">R</span> reset · <span class="kbd">A</span> reroute</p></div>
+<div class="panel"><h3 id="logTitle">EVENT LOG</h3><div id="log" class="log"></div></div>
+<div class="panel"><h3 id="legendTitle">OBJECTS</h3><div class="legend"><span><i class="dot" style="background:#4cc9f0"></i>Drone</span><span><i class="dot" style="background:#ff5c7a"></i>Vehicle</span><span><i class="dot" style="background:#ffd166"></i>Person</span><span><i class="dot" style="background:#42e695"></i>Animal</span></div></div>
+</aside>
+</main>
+<p class="note" id="note">Simulation only. This browser prototype demonstrates the proposed safety workflow; it is not a deployed autonomous drone system.</p>
+</div>
+<script>
+const c=document.getElementById("sim"),ctx=c.getContext("2d"),W=c.width,H=c.height;
+let paused=false,done=false,simTime=0,last=performance.now(),speedMul=1,replans=0,routeName="DIRECT",routeBias=0,forceRoute=false;
+const drone={x:90,y:570,vx:0,vy:0,speed:72,r:11};
+const target={x:875,y:85};
+const hazards=[
+{id:"CAR-01",type:"car",x:180,y:345,vx:48,vy:0,r:22},
+{id:"CAR-02",type:"car",x:760,y:360,vx:-40,vy:0,r:22},
+{id:"HUMAN-01",type:"person",x:460,y:250,vx:0,vy:18,r:13},
+{id:"ANIMAL-01",type:"animal",x:660,y:505,vx:-16,vy:-5,r:12},
+{id:"BIRD-01",type:"bird",x:900,y:160,vx:-105,vy:23,r:10,spawn:7,active:false}
+];
+function reset(){drone.x=90;drone.y=570;drone.vx=drone.vy=0;simTime=0;done=false;paused=false;replans=0;routeName="DIRECT";routeBias=0;forceRoute=false;hazards.forEach((h,i)=>{h.active=h.spawn?false:true;h.x=[180,760,460,660,900][i];h.y=[345,360,250,505,160][i]});logMsg("Mission reset.");}
+function logMsg(s){const el=document.getElementById("log"),d=document.createElement("div");d.textContent=new Date().toLocaleTimeString()+" · "+s;el.prepend(d);while(el.children.length>28)el.lastChild.remove()}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+function dist(a,b){return Math.hypot(a.x-b.x,a.y-b.y)}
+function nearestThreat(){let best=null,bd=Infinity;hazards.forEach(h=>{if(!h.active)return;const d=dist(drone,h);if(d<bd){bd=d;best=h}});return {h:best,d:bd}}
+function pointSeg(px,py,ax,ay,bx,by){const dx=bx-ax,dy=by-ay,t=clamp(((px-ax)*dx+(py-ay)*dy)/(dx*dx+dy*dy||1),0,1);return Math.hypot(px-(ax+t*dx),py-(ay+t*dy))}
+function candidateWaypoints(name){
+ if(name==="DIRECT")return [{x:target.x,y:target.y}];
+ if(name==="LEFT")return [{x:drone.x+80,y:Math.max(80,drone.y-150)},{x:target.x,y:target.y}];
+ return [{x:drone.x+130,y:Math.min(H-90,drone.y+130)},{x:target.x,y:target.y}];
+}
+function routeClear(name){const pts=[{x:drone.x,y:drone.y},...candidateWaypoints(name)];let min=9999;for(let i=0;i<pts.length-1;i++)for(const h of hazards)if(h.active)min=Math.min(min,pointSeg(h.x,h.y,pts[i].x,pts[i].y,pts[i+1].x,pts[i+1].y)-h.r);return min}
+function chooseRoute(){const opts=["DIRECT","LEFT","RIGHT"];let best="DIRECT",score=Infinity;for(const o of opts){let clear=routeClear(o);let length=0,pts=[{x:drone.x,y:drone.y},...candidateWaypoints(o)];for(let i=0;i<pts.length-1;i++)length+=Math.hypot(pts[i+1].x-pts[i].x,pts[i+1].y-pts[i].y);let penalty=clear<45?10000:Math.max(0,80-clear)*7;let s=length+penalty+(o==="DIRECT"?0:28);if(s<score){score=s;best=o}}return best}
+function routePoint(){const pts=[{x:drone.x,y:drone.y},...candidateWaypoints(routeName)];let p=pts[1]||target;return p}
+function analyze(){const n=nearestThreat();if(!n.h)return {risk:0,level:"SAFE",action:"FLY",h:null,d:999,pred:999,closing:0,rel:0,ttc:999,conflict:false};const h=n.h,d=n.d,rvx=h.vx-drone.vx,rvy=h.vy-drone.vy,rel=Math.hypot(rvx,rvy),closing=Math.max(0,-((h.x-drone.x)*rvx+(h.y-drone.y)*rvy)/(d||1)),pred=Math.max(0,d-closing*1.5),ttc=closing>0?(d/closing):999,conflict=routeClear(routeName)<42;let risk=0;risk+=clamp((90-d)*0.9,0,55);risk+=clamp((65-pred)*0.65,0,35);risk+=ttc<4?clamp((4-ttc)*9,0,35):0;risk+=conflict?28:0;if(h.type==="car")risk*=1.15;if(h.type==="person")risk*=1.22;if(h.type==="bird")risk*=1.05;risk=clamp(risk,0,100);let level=risk>=75?"STOP":risk>=42?"WAIT":"SAFE";let action=level==="STOP"?"HOLD / ABORT":level==="WAIT"?(conflict?"REROUTE":"WAIT"):"FLY";return {risk,level,action,h,d,pred,closing,rel,ttc,conflict}}
+function update(dt){simTime+=dt;hazards.forEach(h=>{if(h.spawn&&!h.active&&simTime>=h.spawn){h.active=true;logMsg("BIRD-01 entered the monitored area.");}if(!h.active)return;h.x+=h.vx*dt*speedMul;h.y+=h.vy*dt*speedMul;if(h.type==="car"&&(h.x<90||h.x>930))h.vx*=-1;if(h.type==="animal"&&(h.x<520||h.x>800)){h.vx*=-1}if(h.type==="person"&&(h.y<170||h.y>330))h.vy*=-1;if(h.type==="bird"&&(h.x<520||h.x>950))h.vx*=-1});
+let a=analyze();if(forceRoute||((a.level!=="SAFE"||a.conflict)&&routeName==="DIRECT")){let nr=chooseRoute();if(nr!==routeName){routeName=nr;replans++;logMsg("Route changed to "+nr+" after safety assessment.");}forceRoute=false}
+a=analyze();let p=routePoint(),dx=p.x-drone.x,dy=p.y-drone.y,len=Math.hypot(dx,dy)||1;let desired=a.level==="STOP"?0:drone.speed*speedMul;if(a.level==="WAIT"&&a.action==="WAIT")desired=8;if(a.action==="REROUTE")desired=drone.speed*0.82*speedMul;drone.vx+=(dx/len*desired-drone.vx)*Math.min(1,dt*3);drone.vy+=(dy/len*desired-drone.vy)*Math.min(1,dt*3);if(a.level==="STOP"){drone.vx*=.2;drone.vy*=.2}drone.x+=drone.vx*dt;drone.y+=drone.vy*dt;if(Math.hypot(target.x-drone.x,target.y-drone.y)<22){drone.x=target.x;drone.y=target.y;if(!done){done=true;logMsg("Delivery point reached. Final safety check completed.");}}}
+function draw(){ctx.clearRect(0,0,W,H);ctx.fillStyle="#07111b";ctx.fillRect(0,0,W,H);ctx.strokeStyle="rgba(76,201,240,.08)";ctx.lineWidth=1;for(let x=0;x<W;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke()}for(let y=0;y<H;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}
+ctx.fillStyle="#0b2033";ctx.fillRect(0,310,W,75);ctx.fillStyle="#0a1928";ctx.fillRect(420,0,65,H);ctx.strokeStyle="#173852";ctx.strokeRect(420,0,65,H);
+ctx.fillStyle="#10263d";[[90,70,170,90],[720,70,170,90],[180,455,150,95],[735,485,165,95]].forEach(b=>ctx.fillRect(...b));
+ctx.strokeStyle="rgba(255,255,255,.08)";ctx.setLineDash([8,8]);ctx.beginPath();ctx.moveTo(drone.x,drone.y);ctx.lineTo(target.x,target.y);ctx.stroke();ctx.setLineDash([]);
+let pts=[{x:drone.x,y:drone.y},...candidateWaypoints(routeName)];ctx.strokeStyle=routeName==="DIRECT"?"#4cc9f0":"#42e695";ctx.lineWidth=3;ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.stroke();ctx.lineWidth=1;
+ctx.fillStyle="#42e695";ctx.beginPath();ctx.arc(target.x,target.y,18,0,Math.PI*2);ctx.fill();ctx.fillStyle="#03101b";ctx.font="bold 11px Arial";ctx.textAlign="center";ctx.fillText("DROP",target.x,target.y+4);
+hazards.forEach(h=>{if(!h.active)return;let color=h.type==="car"?"#ff5c7a":h.type==="person"?"#ffd166":h.type==="animal"?"#42e695":"#c084fc";ctx.strokeStyle=color+"55";ctx.beginPath();ctx.arc(h.x,h.y,42,0,Math.PI*2);ctx.stroke();ctx.fillStyle=color;ctx.beginPath();ctx.arc(h.x,h.y,h.r,0,Math.PI*2);ctx.fill();ctx.fillStyle="#fff";ctx.font="bold 11px Arial";ctx.textAlign="center";ctx.fillText(h.id,h.x,h.y-h.r-9)});
+ctx.fillStyle="#4cc9f0";ctx.beginPath();ctx.moveTo(drone.x,drone.y-14);ctx.lineTo(drone.x+17,drone.y);ctx.lineTo(drone.x,drone.y+14);ctx.lineTo(drone.x-17,drone.y);ctx.closePath();ctx.fill();ctx.strokeStyle="#dff8ff";ctx.stroke();
+if(done){ctx.fillStyle="rgba(3,9,19,.78)";ctx.fillRect(0,0,W,H);ctx.textAlign="center";ctx.fillStyle="#42e695";ctx.font="bold 38px Arial";ctx.fillText("DELIVERY COMPLETED",W/2,H/2-15);ctx.fillStyle="#fff";ctx.font="18px Arial";ctx.fillText("Final safety recheck passed",W/2,H/2+25)}
+}
+function ui(){const a=analyze();const st=document.getElementById("status");st.textContent=a.level;st.className="status "+a.level.toLowerCase();document.getElementById("action").textContent=a.action;document.getElementById("risk").textContent=Math.round(a.risk);document.getElementById("riskfill").style.width=a.risk+"%";document.getElementById("riskfill").style.background=a.level==="STOP"?"var(--red)":a.level==="WAIT"?"var(--yellow)":"var(--green)";document.getElementById("threat").textContent=a.h?a.h.id:"None";document.getElementById("dist").textContent=a.h?Math.round(a.d)+" px":"—";document.getElementById("pred").textContent=a.h?Math.round(a.pred)+" px":"—";document.getElementById("close").textContent=a.h?Math.round(a.closing)+" px/s":"—";document.getElementById("rel").textContent=a.h?Math.round(a.rel)+" px/s":"—";document.getElementById("ttc").textContent=a.h?(a.ttc>99?"∞":a.ttc.toFixed(1)+" s"):"—";document.getElementById("route").textContent=routeName;document.getElementById("replans").textContent=replans;document.getElementById("pause").textContent=paused?"Resume":"Pause";document.getElementById("speed").textContent="Speed ×"+speedMul}
+function frame(now){const dt=Math.min(.035,(now-last)/1000);last=now;if(!paused&&!done)update(dt);draw();ui();requestAnimationFrame(frame)}
+document.getElementById("pause").onclick=()=>{paused=!paused;logMsg(paused?"Simulation paused.":"Simulation resumed.")};
+document.getElementById("reset").onclick=reset;
+document.getElementById("reroute").onclick=()=>{forceRoute=true;logMsg("Manual reroute requested.")};
+document.getElementById("speed").onclick=()=>{speedMul=speedMul===1?1.5:speedMul===1.5?0.6:1;};
+document.addEventListener("keydown",e=>{if(e.code==="Space"){e.preventDefault();document.getElementById("pause").click()}if(e.key.toLowerCase()==="r")reset();if(e.key.toLowerCase()==="a")document.getElementById("reroute").click()});
+const T={en:{back:"← Back to Project",badge:"INTERACTIVE SOFTWARE SIMULATION · PROOF OF CONCEPT",intro:"Explore how distance, movement, predicted conflict and route safety can influence a delivery decision.",status:"SAFETY STATUS",analysis:"LIVE ANALYSIS",controls:"CONTROLS",log:"EVENT LOG",legend:"OBJECTS",note:"Simulation only. This browser prototype demonstrates the proposed safety workflow; it is not a deployed autonomous drone system.",pause:"Pause",resume:"Resume"},ar:{back:"← العودة للمشروع",badge:"محاكاة برمجية تفاعلية · إثبات مفهوم",intro:"استكشفي كيف تؤثر المسافة والحركة والتعارض المتوقع وسلامة المسار في قرار التوصيل.",status:"حالة السلامة",analysis:"التحليل المباشر",controls:"التحكم",log:"سجل الأحداث",legend:"العناصر",note:"محاكاة فقط. يوضح هذا النموذج البرمجي سير عمل السلامة المقترح، ولا يمثل نظام درون ذاتي التشغيل منشورًا.",pause:"إيقاف مؤقت",resume:"استئناف"}};
+let lang=localStorage.getItem("hg-lang")||"en";
+function apply(){document.documentElement.lang=lang;document.documentElement.dir=lang==="ar"?"rtl":"ltr";let t=T[lang];document.getElementById("back").textContent=t.back;document.getElementById("badge").textContent=t.badge;document.getElementById("intro").textContent=t.intro;document.getElementById("statusTitle").textContent=t.status;document.getElementById("analysisTitle").textContent=t.analysis;document.getElementById("controlsTitle").textContent=t.controls;document.getElementById("logTitle").textContent=t.log;document.getElementById("legendTitle").textContent=t.legend;document.getElementById("note").textContent=t.note;document.getElementById("pause").textContent=paused?t.resume:t.pause;document.getElementById("lang").textContent=lang==="ar"?"English":"العربية"}
+document.getElementById("lang").onclick=()=>{lang=lang==="en"?"ar":"en";localStorage.setItem("hg-lang",lang);apply()};reset();apply();requestAnimationFrame(frame);
+</script>
+</body>
+</html>
