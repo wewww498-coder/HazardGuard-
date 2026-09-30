@@ -1,0 +1,4232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>HazardGuard Drone - Interactive Safety Simulation</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    --bg: #05080d;
+    --panel: #0d141d;
+    --panel2: #111b25;
+    --border: #263746;
+    --text: #edf4f8;
+    --muted: #8c9aa8;
+    --cyan: #00d9ff;
+    --green: #31e36f;
+    --yellow: #ffd329;
+    --orange: #ff9f32;
+    --red: #ff4254;
+    --purple: #b77cff;
+    --pink: #ff69b4;
+}
+
+body {
+    margin: 0;
+    background:
+        radial-gradient(circle at 20% 10%, rgba(0,217,255,.06), transparent 28%),
+        radial-gradient(circle at 80% 80%, rgba(0,100,255,.05), transparent 30%),
+        #05080d;
+    color: var(--text);
+    font-family:
+        Inter,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+}
+
+.simulation-wrapper {
+    width: min(1500px, 96vw);
+    margin: 40px auto;
+}
+
+.sim-header {
+    margin-bottom: 18px;
+}
+
+.kicker {
+    color: var(--cyan);
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.sim-title {
+    margin: 7px 0 5px;
+    font-size: clamp(26px, 4vw, 42px);
+    line-height: 1.05;
+}
+
+.sim-subtitle {
+    color: var(--muted);
+    margin: 0;
+    max-width: 850px;
+    line-height: 1.6;
+}
+
+.sim-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 350px;
+    gap: 14px;
+}
+
+.canvas-panel {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    background: #0a1017;
+    box-shadow: 0 20px 70px rgba(0,0,0,.35);
+}
+
+#simulationCanvas {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    background: #0e151c;
+}
+
+.controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 12px;
+    border-top: 1px solid var(--border);
+    background: rgba(7,12,18,.96);
+}
+
+button {
+    border: 1px solid #2a3c4c;
+    background: #101a24;
+    color: white;
+    padding: 9px 13px;
+    border-radius: 9px;
+    cursor: pointer;
+    font-weight: 700;
+    transition: .18s ease;
+}
+
+button:hover {
+    border-color: var(--cyan);
+    transform: translateY(-1px);
+}
+
+button.primary {
+    background: rgba(0,217,255,.12);
+    border-color: rgba(0,217,255,.5);
+    color: var(--cyan);
+}
+
+.side-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.card {
+    background:
+        linear-gradient(180deg, rgba(18,28,39,.96), rgba(10,17,24,.96));
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    padding: 15px;
+}
+
+.card-title {
+    color: var(--cyan);
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 1.4px;
+    margin-bottom: 12px;
+}
+
+.status-box {
+    border-radius: 12px;
+    padding: 13px;
+    border: 1px solid #293b4b;
+    background: #091017;
+}
+
+.status-main {
+    font-size: 23px;
+    font-weight: 900;
+    margin-bottom: 5px;
+}
+
+.status-action {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.5;
+}
+
+.metric-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 7px;
+}
+
+.metric {
+    background: rgba(255,255,255,.025);
+    border: 1px solid #1e2d39;
+    border-radius: 9px;
+    padding: 9px;
+}
+
+.metric-label {
+    color: var(--muted);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+}
+
+.metric-value {
+    margin-top: 3px;
+    font-weight: 800;
+    font-size: 14px;
+}
+
+.reason {
+    color: #dbe5eb;
+    font-size: 12px;
+    line-height: 1.55;
+}
+
+.log {
+    height: 155px;
+    overflow: auto;
+    font-family: Consolas, monospace;
+    font-size: 10px;
+    line-height: 1.6;
+    color: #d5e2ea;
+}
+
+.log-entry {
+    padding: 3px 0;
+    border-bottom: 1px solid rgba(255,255,255,.04);
+}
+
+.legend {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 7px;
+}
+
+.legend-item {
+    font-size: 11px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    flex: 0 0 9px;
+}
+
+.footer-note {
+    color: #667785;
+    font-size: 10px;
+    line-height: 1.5;
+    margin-top: 3px;
+}
+
+@media (max-width: 1050px) {
+    .sim-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .side-panel {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .side-panel .wide {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 680px) {
+    .simulation-wrapper {
+        width: 94vw;
+    }
+
+    .side-panel {
+        display: flex;
+    }
+
+    .controls button {
+        flex: 1;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="simulation-wrapper">
+
+    <div class="sim-header">
+        <div class="kicker">Interactive Prototype Demonstration</div>
+
+        <h1 class="sim-title">
+            HazardGuard Drone
+        </h1>
+
+        <p class="sim-subtitle">
+            Motion and risk-based safety simulation for residential drone delivery.
+            The system evaluates moving hazards, estimates future interaction,
+            selects a safer route, and continuously updates the mission state.
+        </p>
+    </div>
+
+    <div class="sim-layout">
+
+        <div class="canvas-panel">
+
+            <canvas id="simulationCanvas"
+                    width="880"
+                    height="720">
+            </canvas>
+
+            <div class="controls">
+                <button id="pauseBtn" class="primary">
+                    Pause
+                </button>
+
+                <button id="resetBtn">
+                    Reset
+                </button>
+
+                <button id="rerouteBtn">
+                    Force Reroute
+                </button>
+            </div>
+
+        </div>
+
+        <div class="side-panel">
+
+            <!-- STATUS -->
+
+            <div class="card">
+                <div class="card-title">MISSION STATUS</div>
+
+                <div class="status-box">
+
+                    <div id="statusMain"
+                         class="status-main">
+                        INITIALIZING
+                    </div>
+
+                    <div id="statusAction"
+                         class="status-action">
+                        Calculating safe route...
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- RISK -->
+
+            <div class="card">
+
+                <div class="card-title">
+                    RISK ANALYSIS
+                </div>
+
+                <div class="metric-grid">
+
+                    <div class="metric">
+                        <div class="metric-label">
+                            Risk Level
+                        </div>
+                        <div id="riskLevel"
+                             class="metric-value">
+                            SAFE
+                        </div>
+                    </div>
+
+                    <div class="metric">
+                        <div class="metric-label">
+                            Score
+                        </div>
+                        <div id="riskScore"
+                             class="metric-value">
+                            0 / 100
+                        </div>
+                    </div>
+
+                    <div class="metric">
+                        <div class="metric-label">
+                            Object
+                        </div>
+                        <div id="threatId"
+                             class="metric-value">
+                            NONE
+                        </div>
+                    </div>
+
+                    <div class="metric">
+                        <div class="metric-label">
+                            Type
+                        </div>
+                        <div id="threatType"
+                             class="metric-value">
+                            NONE
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- DISTANCE -->
+
+            <div class="card">
+
+                <div class="card-title">
+                    THREAT TRACKING
+                </div>
+
+                <div class="metric-grid">
+
+                    <div class="metric">
+                        <div class="metric-label">
+                            Current Distance
+                        </div>
+                        <div id="currentDistance"
+                             class="metric-value">
+                            999
+                        </div>
+                    </div>
+
+                    <div class="metric">
+                        <div class="metric-label">
+                            Predicted Minimum
+                        </div>
+                        <div id="predictedDistance"
+                             class="metric-value">
+                            999
+                        </div>
+                    </div>
+
+                    <div class="metric">
+                        <div class="metric-label">
+                            Closing Speed
+                        </div>
+                        <div id="closingSpeed"
+                             class="metric-value">
+                            0
+                        </div>
+                    </div>
+
+                    <div class="metric">
+                        <div class="metric-label">
+                            Relative Speed
+                        </div>
+                        <div id="relativeSpeed"
+                             class="metric-value">
+                            0
+                        </div>
+                    </div>
+
+                    <div class="metric">
+                        <div class="metric-label">
+                            TTC
+                        </div>
+                        <div id="ttc"
+                             class="metric-value">
+                            NO CONFLICT
+                        </div>
+                    </div>
+
+                    <div class="metric">
+                        <div class="metric-label">
+                            Route Conflict
+                        </div>
+                        <div id="routeConflict"
+                             class="metric-value">
+                            NO
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- NAVIGATION -->
+
+            <div class="card">
+
+                <div class="card-title">
+                    ROUTE INTELLIGENCE
+                </div>
+
+                <div class="metric-grid">
+
+                    <div class="metric">
+                        <div class="metric-label">
+                            Route
+                        </div>
+                        <div id="routeMode"
+                             class="metric-value">
+                            DIRECT
+                        </div>
+                    </div>
+
+                    <div class="metric">
+                        <div class="metric-label">
+                            Replans
+                        </div>
+                        <div id="replans"
+                             class="metric-value">
+                            0
+                        </div>
+                    </div>
+
+                    <div class="metric">
+                        <div class="metric-label">
+                            GPS
+                        </div>
+                        <div id="gps"
+                             class="metric-value">
+                            0, 0
+                        </div>
+                    </div>
+
+                    <div class="metric">
+                        <div class="metric-label">
+                            ETA
+                        </div>
+                        <div id="eta"
+                             class="metric-value">
+                            --
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- SYSTEM -->
+
+            <div class="card">
+
+                <div class="card-title">
+                    SYSTEM HEALTH
+                </div>
+
+                <div class="metric-grid">
+
+                    <div class="metric">
+                        <div class="metric-label">
+                            Battery
+                        </div>
+                        <div id="battery"
+                             class="metric-value">
+                            100%
+                        </div>
+                    </div>
+
+                    <div class="metric">
+                        <div class="metric-label">
+                            Signal
+                        </div>
+                        <div id="signal"
+                             class="metric-value">
+                            100%
+                        </div>
+                    </div>
+
+                    <div class="metric">
+                        <div class="metric-label">
+                            Speed
+                        </div>
+                        <div id="droneSpeed"
+                             class="metric-value">
+                            0
+                        </div>
+                    </div>
+
+                    <div class="metric">
+                        <div class="metric-label">
+                            Mission
+                        </div>
+                        <div id="mission"
+                             class="metric-value">
+                            DELIVERY
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- DECISION -->
+
+            <div class="card wide">
+
+                <div class="card-title">
+                    SAFETY DECISION
+                </div>
+
+                <div id="reason"
+                     class="reason">
+                    Initializing safety engine...
+                </div>
+
+            </div>
+
+            <!-- LOG -->
+
+            <div class="card wide">
+
+                <div class="card-title">
+                    AI EVENT LOG
+                </div>
+
+                <div id="eventLog"
+                     class="log">
+                </div>
+
+            </div>
+
+            <!-- LEGEND -->
+
+            <div class="card wide">
+
+                <div class="card-title">
+                    HAZARD LEGEND
+                </div>
+
+                <div class="legend">
+
+                    <div class="legend-item">
+                        <span class="dot"
+                              style="background:#ff9f32"></span>
+                        Vehicle
+                    </div>
+
+                    <div class="legend-item">
+                        <span class="dot"
+                              style="background:#b77cff"></span>
+                        Pedestrian
+                    </div>
+
+                    <div class="legend-item">
+                        <span class="dot"
+                              style="background:#ff69b4"></span>
+                        Animal
+                    </div>
+
+                    <div class="legend-item">
+                        <span class="dot"
+                              style="background:#ff4254"></span>
+                        Bird
+                    </div>
+
+                </div>
+
+                <div class="footer-note">
+                    Software simulation / proof of concept.
+                    This interactive demonstration does not represent
+                    a deployed commercial drone system.
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+
+<script>
+
+/* ============================================================
+   HAZARDGUARD DRONE
+   WEB INTERACTIVE SAFETY SIMULATION
+
+   Ported from the Python/OpenCV simulation logic.
+
+   This is a rule-based motion and risk simulation.
+   ============================================================ */
+
+
+/* ============================================================
+   CANVAS
+   ============================================================ */
+
+const canvas =
+    document.getElementById("simulationCanvas");
+
+const ctx =
+    canvas.getContext("2d");
+
+const WIDTH = canvas.width;
+const HEIGHT = canvas.height;
+
+
+/* ============================================================
+   SIMULATION PARAMETERS
+   ============================================================ */
+
+const MAP_RIGHT = 880;
+
+const DRONE_SPEED = 75;
+
+const DRONE_MAX_SPEED = 105;
+
+const SAFETY_RADIUS = 55;
+
+const CRITICAL_RADIUS = 38;
+
+const PREDICTION_TIME = 4.0;
+
+const SHORT_PREDICTION = 1.5;
+
+const ROUTE_CORRIDOR = 45;
+
+const ROUTE_HAZARD_MARGIN = 18;
+
+const ROUTE_PREFERRED_CLEARANCE = 85;
+
+const ROUTE_REPLAN_COOLDOWN = 0.75;
+
+
+/* ============================================================
+   COLORS
+   ============================================================ */
+
+const COLORS = {
+
+    bg: "#161d24",
+
+    grid: "#232c35",
+
+    road: "#343a41",
+
+    roadLine: "#c0c0c0",
+
+    house: "#b9c3cd",
+
+    roof: "#2d37b4",
+
+    grass: "#286937",
+
+    cyan: "#00d9ff",
+
+    green: "#32dc64",
+
+    yellow: "#ffd329",
+
+    orange: "#ff9632",
+
+    red: "#ff4055",
+
+    purple: "#b050ff",
+
+    pink: "#ff50b4",
+
+    white: "#f5f5f5",
+
+    gray: "#919ba5",
+
+    panel: "#10161d"
+
+};
+
+
+/* ============================================================
+   BASIC MATH
+   ============================================================ */
+
+function distance(a, b) {
+
+    return Math.hypot(
+        b.x - a.x,
+        b.y - a.y
+    );
+}
+
+
+function normalize(v) {
+
+    const n =
+        Math.hypot(v.x, v.y);
+
+    if (n < 0.000001) {
+
+        return {
+            x: 0,
+            y: 0
+        };
+    }
+
+    return {
+        x: v.x / n,
+        y: v.y / n
+    };
+}
+
+
+function clamp(value, low, high) {
+
+    return Math.max(
+        low,
+        Math.min(high, value)
+    );
+}
+
+
+function pointSegmentDistance(point, a, b) {
+
+    const abx = b.x - a.x;
+    const aby = b.y - a.y;
+
+    const apx = point.x - a.x;
+    const apy = point.y - a.y;
+
+    const denom =
+        abx * abx +
+        aby * aby;
+
+    if (denom < 0.000001) {
+
+        return distance(point, a);
+    }
+
+    let t =
+        (apx * abx + apy * aby) /
+        denom;
+
+    t = clamp(t, 0, 1);
+
+    const closest = {
+
+        x: a.x + abx * t,
+
+        y: a.y + aby * t
+
+    };
+
+    return distance(point, closest);
+}
+
+
+function predictedPosition(obj, seconds) {
+
+    return {
+
+        x: obj.x + obj.vx * seconds,
+
+        y: obj.y + obj.vy * seconds
+
+    };
+}
+
+
+/* ============================================================
+   HAZARDS
+   ============================================================ */
+
+function createHazards() {
+
+    return [
+
+        {
+
+            id: "CAR-01",
+
+            type: "CAR",
+
+            x: 130,
+
+            y: 360,
+
+            vx: 55,
+
+            vy: 0,
+
+            radius: 28,
+
+            active: true
+
+        },
+
+        {
+
+            id: "CAR-02",
+
+            type: "CAR",
+
+            x: 720,
+
+            y: 360,
+
+            vx: -42,
+
+            vy: 0,
+
+            radius: 28,
+
+            active: true
+
+        },
+
+        {
+
+            id: "HUMAN-01",
+
+            type: "PEDESTRIAN",
+
+            x: 440,
+
+            y: 275,
+
+            vx: 0,
+
+            vy: 20,
+
+            radius: 15,
+
+            active: true
+
+        },
+
+        {
+
+            id: "ANIMAL-01",
+
+            type: "ANIMAL",
+
+            x: 650,
+
+            y: 500,
+
+            vx: -18,
+
+            vy: -5,
+
+            radius: 18,
+
+            active: true
+
+        },
+
+        {
+
+            id: "BIRD-01",
+
+            type: "BIRD",
+
+            x: 840,
+
+            y: 180,
+
+            vx: -115,
+
+            vy: 25,
+
+            radius: 12,
+
+            active: false,
+
+            spawnDelay: 7,
+
+            spawned: false
+
+        }
+
+    ];
+}
+
+
+/* ============================================================
+   BUILDINGS
+   ============================================================ */
+
+const buildings = [
+
+    {
+        x: 180,
+        y: 80,
+        w: 170,
+        h: 190,
+        name: "HOUSE A"
+    },
+
+    {
+        x: 500,
+        y: 80,
+        w: 190,
+        h: 150,
+        name: "HOUSE B"
+    },
+
+    {
+        x: 550,
+        y: 465,
+        w: 230,
+        h: 155,
+        name: "HOUSE C"
+    }
+
+];
+
+
+/* ============================================================
+   AI ENGINE
+   ============================================================ */
+
+class SafetyAI {
+
+    constructor(start, destination) {
+
+        this.start = {
+            x: start.x,
+            y: start.y
+        };
+
+        this.drone = {
+            x: start.x,
+            y: start.y
+        };
+
+        this.destination = {
+            x: destination.x,
+            y: destination.y
+        };
+
+        this.velocity = {
+            x: 0,
+            y: 0
+        };
+
+        this.speed = DRONE_SPEED;
+
+        this.heading = 0;
+
+        this.status = "INITIALIZING";
+
+        this.action = "CALCULATING";
+
+        this.reason =
+            "Initializing safety engine...";
+
+        this.riskScore = 0;
+
+        this.riskLevel = "SAFE";
+
+        this.threatId = "NONE";
+
+        this.threatType = "NONE";
+
+        this.currentDistance = 999;
+
+        this.predictedDistance = 999;
+
+        this.ttc = 999;
+
+        this.closingSpeed = 0;
+
+        this.relativeSpeed = 0;
+
+        this.routeConflict = false;
+
+        this.routeDistance = 999;
+
+        this.routeMode = "INITIAL";
+
+        this.replanCount = 0;
+
+        this.lastReplanTime = -999;
+
+        this.routeLength = 0;
+
+        this.routeETA = 0;
+
+        this.deliveryComplete = false;
+
+        this.currentTarget = 1;
+
+        this.logs = [];
+
+        this.route = [
+
+            {...this.start},
+
+            {x:250, y:520},
+
+            {x:390, y:380},
+
+            {x:530, y:250},
+
+            {...this.destination}
+
+        ];
+
+        this.addLog(
+            "SYSTEM: Safety Engine ONLINE"
+        );
+
+        this.addLog(
+            "TRACKING: Dynamic object tracking ACTIVE"
+        );
+
+        this.addLog(
+            "NAVIGATION: Forward detour routing ACTIVE"
+        );
+
+    }
+
+
+    addLog(message) {
+
+        const now =
+            new Date().toLocaleTimeString();
+
+        this.logs.unshift(
+            `[${now}] ${message}`
+        );
+
+        this.logs =
+            this.logs.slice(0, 7);
+
+    }
+
+
+    getCurrentTarget() {
+
+        if (
+            this.currentTarget >=
+            this.route.length
+        ) {
+
+            return this.destination;
+        }
+
+        return this.route[
+            this.currentTarget
+        ];
+
+    }
+
+
+    calculateRouteLength(route) {
+
+        let total = 0;
+
+        for (
+            let i = 0;
+            i < route.length - 1;
+            i++
+        ) {
+
+            total += distance(
+                route[i],
+                route[i + 1]
+            );
+
+        }
+
+        return total;
+    }
+
+
+    routeClearance(
+        route,
+        hazards,
+        predictionHorizon = 3
+    ) {
+
+        let minClearance = 9999;
+
+        let conflicts = 0;
+
+        for (const obj of hazards) {
+
+            if (!obj.active)
+                continue;
+
+            for (let step = 0; step <= 6; step++) {
+
+                const t =
+                    predictionHorizon *
+                    step / 6;
+
+                const future =
+                    predictedPosition(
+                        obj,
+                        t
+                    );
+
+                for (
+                    let i = 0;
+                    i < route.length - 1;
+                    i++
+                ) {
+
+                    const d =
+                        pointSegmentDistance(
+                            future,
+                            route[i],
+                            route[i + 1]
+                        );
+
+                    const clearance =
+                        d - obj.radius;
+
+                    minClearance =
+                        Math.min(
+                            minClearance,
+                            clearance
+                        );
+
+                    if (
+                        clearance <
+                        ROUTE_HAZARD_MARGIN
+                    ) {
+
+                        conflicts++;
+
+                    }
+
+                }
+
+            }
+
+        }
+
+        return {
+            clearance: minClearance,
+            conflicts
+        };
+
+    }
+
+
+    evaluateCandidateRoute(
+        route,
+        hazards
+    ) {
+
+        const length =
+            this.calculateRouteLength(route);
+
+        const result =
+            this.routeClearance(
+                route,
+                hazards
+            );
+
+        let penalty = 0;
+
+        if (result.clearance < 0) {
+
+            penalty += 100000;
+
+        } else if (
+            result.clearance <
+            ROUTE_HAZARD_MARGIN
+        ) {
+
+            penalty +=
+                (
+                    ROUTE_HAZARD_MARGIN -
+                    result.clearance
+                ) * 500;
+
+        } else if (
+            result.clearance <
+            ROUTE_PREFERRED_CLEARANCE
+        ) {
+
+            penalty +=
+                (
+                    ROUTE_PREFERRED_CLEARANCE -
+                    result.clearance
+                ) * 2;
+
+        }
+
+        penalty +=
+            result.conflicts * 2500;
+
+        const score =
+            length + penalty;
+
+        const safe =
+            result.clearance >=
+            ROUTE_HAZARD_MARGIN &&
+            result.conflicts === 0;
+
+        return {
+
+            route,
+
+            length,
+
+            clearance:
+                result.clearance,
+
+            conflicts:
+                result.conflicts,
+
+            score,
+
+            safe
+
+        };
+
+    }
+
+
+    makeCandidateRoutes() {
+
+        const start =
+            {...this.drone};
+
+        const goal =
+            {...this.destination};
+
+        const direction =
+            normalize({
+                x: goal.x - start.x,
+                y: goal.y - start.y
+            });
+
+        const perpendicular = {
+
+            x: -direction.y,
+
+            y: direction.x
+
+        };
+
+        const mid = {
+
+            x: (start.x + goal.x) / 2,
+
+            y: (start.y + goal.y) / 2
+
+        };
+
+        const leftPoint = {
+
+            x: clamp(
+                mid.x +
+                perpendicular.x * 140,
+                70,
+                MAP_RIGHT - 70
+            ),
+
+            y: clamp(
+                mid.y +
+                perpendicular.y * 140,
+                70,
+                HEIGHT - 70
+            )
+
+        };
+
+        const rightPoint = {
+
+            x: clamp(
+                mid.x -
+                perpendicular.x * 140,
+                70,
+                MAP_RIGHT - 70
+            ),
+
+            y: clamp(
+                mid.y -
+                perpendicular.y * 140,
+                70,
+                HEIGHT - 70
+            )
+
+        };
+
+        return [
+
+            {
+                name: "DIRECT",
+                route: [
+                    start,
+                    goal
+                ]
+            },
+
+            {
+                name: "LEFT",
+                route: [
+                    start,
+                    leftPoint,
+                    goal
+                ]
+            },
+
+            {
+                name: "RIGHT",
+                route: [
+                    start,
+                    rightPoint,
+                    goal
+                ]
+            }
+
+        ];
+
+    }
+
+
+    chooseRoute(hazards, force = false) {
+
+        const now =
+            performance.now() / 1000;
+
+        if (
+            !force &&
+            now - this.lastReplanTime <
+            ROUTE_REPLAN_COOLDOWN
+        ) {
+
+            return false;
+
+        }
+
+        const candidates =
+            this.makeCandidateRoutes();
+
+        const evaluated =
+            candidates.map(candidate => ({
+
+                name: candidate.name,
+
+                result:
+                    this.evaluateCandidateRoute(
+                        candidate.route,
+                        hazards
+                    )
+
+            }));
+
+        const safeCandidates =
+            evaluated.filter(
+                item => item.result.safe
+            );
+
+        let selected;
+
+        if (safeCandidates.length > 0) {
+
+            selected =
+                safeCandidates.reduce(
+                    (best, current) =>
+                        current.result.length <
+                        best.result.length
+                            ? current
+                            : best
+                );
+
+        } else {
+
+            selected =
+                evaluated.reduce(
+                    (best, current) =>
+                        current.result.score <
+                        best.result.score
+                            ? current
+                            : best
+                );
+
+        }
+
+        const oldMode =
+            this.routeMode;
+
+        this.route =
+            selected.result.route.map(p => ({
+                x: p.x,
+                y: p.y
+            }));
+
+        this.currentTarget = 1;
+
+        this.routeMode =
+            selected.name;
+
+        this.routeLength =
+            selected.result.length;
+
+        this.lastReplanTime =
+            now;
+
+        const changed =
+            oldMode !== selected.name;
+
+        if (
+            changed &&
+            oldMode !== "INITIAL"
+        ) {
+
+            this.replanCount++;
+
+            if (
+                selected.name === "DIRECT"
+            ) {
+
+                this.addLog(
+                    "ROUTE: Direct path clear"
+                );
+
+            } else {
+
+                this.addLog(
+                    `REROUTE: Detour via ${selected.name}`
+                );
+
+            }
+
+        }
+
+        return changed;
+
+    }
+
+
+    predictInteraction(obj) {
+
+        const dronePos =
+            {...this.drone};
+
+        const droneVel =
+            {...this.velocity};
+
+        const objPos = {
+            x: obj.x,
+            y: obj.y
+        };
+
+        const objVel = {
+            x: obj.vx,
+            y: obj.vy
+        };
+
+        const relativePosition = {
+
+            x: objPos.x - dronePos.x,
+
+            y: objPos.y - dronePos.y
+
+        };
+
+        const relativeVelocity = {
+
+            x: objVel.x - droneVel.x,
+
+            y: objVel.y - droneVel.y
+
+        };
+
+        const relSpeedSq =
+            relativeVelocity.x *
+            relativeVelocity.x +
+            relativeVelocity.y *
+            relativeVelocity.y;
+
+        const currentDistance =
+            Math.hypot(
+                relativePosition.x,
+                relativePosition.y
+            );
+
+        let tClosest;
+
+        if (relSpeedSq > 0.0001) {
+
+            tClosest =
+                -(
+                    relativePosition.x *
+                    relativeVelocity.x +
+                    relativePosition.y *
+                    relativeVelocity.y
+                ) / relSpeedSq;
+
+            tClosest =
+                clamp(
+                    tClosest,
+                    0,
+                    PREDICTION_TIME
+                );
+
+        } else {
+
+            tClosest =
+                PREDICTION_TIME;
+
+        }
+
+        const futureDrone = {
+
+            x:
+                dronePos.x +
+                droneVel.x * tClosest,
+
+            y:
+                dronePos.y +
+                droneVel.y * tClosest
+
+        };
+
+        const futureObject = {
+
+            x:
+                objPos.x +
+                objVel.x * tClosest,
+
+            y:
+                objPos.y +
+                objVel.y * tClosest
+
+        };
+
+        const predictedDistance =
+            distance(
+                futureObject,
+                futureDrone
+            );
+
+        const relNorm =
+            Math.sqrt(relSpeedSq);
+
+        let closingSpeed = 0;
+
+        if (currentDistance > 0.1) {
+
+            closingSpeed =
+                -(
+                    relativePosition.x *
+                    relativeVelocity.x +
+                    relativePosition.y *
+                    relativeVelocity.y
+                ) / currentDistance;
+
+        }
+
+        const routeDistance =
+            pointSegmentDistance(
+                objPos,
+                this.drone,
+                this.destination
+            );
+
+        const routeConflict =
+            routeDistance <
+            (
+                ROUTE_CORRIDOR +
+                obj.radius
+            );
+
+        let ttc = 999;
+
+        if (closingSpeed > 0.5) {
+
+            const safeGap =
+                Math.max(
+                    20,
+                    obj.radius + 18
+                );
+
+            const effectiveDistance =
+                Math.max(
+                    0,
+                    currentDistance -
+                    safeGap
+                );
+
+            ttc =
+                effectiveDistance /
+                closingSpeed;
+
+        }
+
+        return {
+
+            currentDistance,
+
+            predictedDistance,
+
+            ttc,
+
+            closingSpeed,
+
+            relativeSpeed:
+                relNorm,
+
+            routeDistance,
+
+            routeConflict,
+
+            approaching:
+                closingSpeed > 1
+
+        };
+
+    }
+
+
+    calculateRisk(
+        obj,
+        analysis
+    ) {
+
+        const d =
+            analysis.currentDistance;
+
+        const pd =
+            analysis.predictedDistance;
+
+        const ttc =
+            analysis.ttc;
+
+        const closing =
+            analysis.closingSpeed;
+
+        let score = 0;
+
+        if (d < 35)
+            score += 60;
+        else if (d < 60)
+            score += 42;
+        else if (d < 90)
+            score += 20;
+        else if (d < 130)
+            score += 8;
+
+        if (pd < 30)
+            score += 40;
+        else if (pd < 50)
+            score += 30;
+        else if (pd < 75)
+            score += 18;
+        else if (pd < 110)
+            score += 8;
+
+        if (ttc < 1)
+            score += 45;
+        else if (ttc < 2)
+            score += 32;
+        else if (ttc < 3)
+            score += 18;
+        else if (ttc < 4)
+            score += 8;
+
+        if (closing > 50)
+            score += 22;
+        else if (closing > 30)
+            score += 15;
+        else if (closing > 15)
+            score += 8;
+
+        if (analysis.routeConflict)
+            score += 18;
+
+        if (obj.type === "CAR")
+            score *= 1.15;
+
+        else if (obj.type === "BIRD")
+            score *= 1.35;
+
+        else if (obj.type === "PEDESTRIAN")
+            score *= 1.20;
+
+        return clamp(
+            score,
+            0,
+            100
+        );
+
+    }
+
+
+    analyze(hazards) {
+
+        let bestObj = null;
+
+        let bestAnalysis = null;
+
+        let bestScore = -1;
+
+        for (const obj of hazards) {
+
+            if (!obj.active)
+                continue;
+
+            const analysis =
+                this.predictInteraction(obj);
+
+            const score =
+                this.calculateRisk(
+                    obj,
+                    analysis
+                );
+
+            if (
+                score >
+                bestScore
+            ) {
+
+                bestScore = score;
+
+                bestObj = obj;
+
+                bestAnalysis =
+                    analysis;
+
+            }
+
+        }
+
+        if (!bestObj) {
+
+            this.threatId = "NONE";
+
+            this.threatType = "NONE";
+
+            this.riskScore = 0;
+
+            this.riskLevel = "SAFE";
+
+            this.currentDistance = 999;
+
+            this.predictedDistance = 999;
+
+            this.ttc = 999;
+
+            this.closingSpeed = 0;
+
+            this.relativeSpeed = 0;
+
+            this.routeConflict = false;
+
+            this.routeDistance = 999;
+
+            return null;
+
+        }
+
+        this.threatId =
+            bestObj.id;
+
+        this.threatType =
+            bestObj.type;
+
+        this.riskScore =
+            bestScore;
+
+        this.currentDistance =
+            bestAnalysis.currentDistance;
+
+        this.predictedDistance =
+            bestAnalysis.predictedDistance;
+
+        this.ttc =
+            bestAnalysis.ttc;
+
+        this.closingSpeed =
+            bestAnalysis.closingSpeed;
+
+        this.relativeSpeed =
+            bestAnalysis.relativeSpeed;
+
+        this.routeConflict =
+            bestAnalysis.routeConflict;
+
+        this.routeDistance =
+            bestAnalysis.routeDistance;
+
+        if (bestScore >= 75)
+            this.riskLevel = "CRITICAL";
+
+        else if (bestScore >= 48)
+            this.riskLevel = "HIGH";
+
+        else if (bestScore >= 25)
+            this.riskLevel = "MEDIUM";
+
+        else
+            this.riskLevel = "SAFE";
+
+        return {
+
+            obj: bestObj,
+
+            analysis:
+                bestAnalysis
+
+        };
+
+    }
+
+
+    update(hazards, dt) {
+
+        if (this.deliveryComplete)
+            return;
+
+        const destinationDistance =
+            distance(
+                this.drone,
+                this.destination
+            );
+
+        if (destinationDistance < 20) {
+
+            this.drone =
+                {...this.destination};
+
+            this.velocity = {
+                x: 0,
+                y: 0
+            };
+
+            this.deliveryComplete = true;
+
+            this.status =
+                "DELIVERED";
+
+            this.action =
+                "DELIVERY COMPLETE";
+
+            this.reason =
+                "Package delivered safely.";
+
+            this.addLog(
+                "MISSION: Delivery completed successfully"
+            );
+
+            return;
+
+        }
+
+        const threat =
+            this.analyze(hazards);
+
+        this.chooseRoute(
+            hazards,
+            this.routeMode === "INITIAL"
+        );
+
+        if (!threat) {
+
+            this.status = "FLY";
+
+            this.action = "FLY";
+
+            this.reason =
+                this.routeMode === "DIRECT"
+                    ? "Path clear. Direct route active."
+                    : `Safe ${this.routeMode.toLowerCase()} route selected.`;
+
+        } else {
+
+            const obj =
+                threat.obj;
+
+            const analysis =
+                threat.analysis;
+
+            if (
+                this.riskLevel === "CRITICAL" ||
+                this.riskLevel === "HIGH"
+            ) {
+
+                this.chooseRoute(
+                    hazards,
+                    true
+                );
+
+                this.status =
+                    "REROUTING";
+
+                if (
+                    this.routeMode === "LEFT"
+                ) {
+
+                    this.action =
+                        "DETOUR LEFT";
+
+                } else if (
+                    this.routeMode === "RIGHT"
+                ) {
+
+                    this.action =
+                        "DETOUR RIGHT";
+
+                } else {
+
+                    this.action =
+                        "HOLD";
+
+                }
+
+                this.reason =
+                    `${obj.type} hazard detected. Rerouting via ${this.routeMode}.`;
+
+            }
+
+            else if (
+                this.riskLevel === "MEDIUM"
+            ) {
+
+                if (
+                    analysis.routeConflict &&
+                    analysis.approaching
+                ) {
+
+                    this.status =
+                        "WAIT";
+
+                    this.action =
+                        "WAIT";
+
+                    this.reason =
+                        `${obj.type} approaching. Holding position temporarily.`;
+
+                } else {
+
+                    this.status =
+                        "MONITORING";
+
+                    this.action =
+                        "FLY";
+
+                    this.reason =
+                        `${obj.type} detected. Maintaining safe bypass route.`;
+
+                }
+
+            }
+
+            else {
+
+                this.status =
+                    "FLY";
+
+                this.action =
+                    "FLY";
+
+                this.reason =
+                    "Hazard detected but path remains acceptable.";
+
+            }
+
+        }
+
+
+        const target =
+            this.getCurrentTarget();
+
+        let direction =
+            normalize({
+                x: target.x - this.drone.x,
+                y: target.y - this.drone.y
+            });
+
+        let desiredVelocity = {
+
+            x:
+                direction.x *
+                this.speed,
+
+            y:
+                direction.y *
+                this.speed
+
+        };
+
+
+        if (
+            this.action === "WAIT"
+        ) {
+
+            desiredVelocity.x *= .05;
+
+            desiredVelocity.y *= .05;
+
+        }
+
+
+        /* SIDE AVOIDANCE */
+
+        let avoidance = {
+            x: 0,
+            y: 0
+        };
+
+        for (const obj of hazards) {
+
+            if (!obj.active)
+                continue;
+
+            const d =
+                distance(
+                    this.drone,
+                    obj
+                );
+
+            const future =
+                predictedPosition(
+                    obj,
+                    SHORT_PREDICTION
+                );
+
+            const futureD =
+                distance(
+                    this.drone,
+                    future
+                );
+
+            const dangerDistance =
+                SAFETY_RADIUS +
+                obj.radius;
+
+            if (
+                d < dangerDistance
+            ) {
+
+                const away =
+                    normalize({
+                        x:
+                            this.drone.x -
+                            obj.x,
+
+                        y:
+                            this.drone.y -
+                            obj.y
+                    });
+
+                const strength =
+                    (
+                        dangerDistance -
+                        d
+                    ) /
+                    dangerDistance;
+
+                avoidance.x +=
+                    away.x *
+                    strength *
+                    110;
+
+                avoidance.y +=
+                    away.y *
+                    strength *
+                    110;
+
+            }
+
+            else if (
+                futureD <
+                dangerDistance
+            ) {
+
+                const away =
+                    normalize({
+                        x:
+                            this.drone.x -
+                            future.x,
+
+                        y:
+                            this.drone.y -
+                            future.y
+                    });
+
+                const strength =
+                    (
+                        dangerDistance -
+                        futureD
+                    ) /
+                    dangerDistance;
+
+                avoidance.x +=
+                    away.x *
+                    strength *
+                    80;
+
+                avoidance.y +=
+                    away.y *
+                    strength *
+                    80;
+
+            }
+
+        }
+
+
+        desiredVelocity.x +=
+            avoidance.x;
+
+        desiredVelocity.y +=
+            avoidance.y;
+
+
+        let velocityNorm =
+            Math.hypot(
+                desiredVelocity.x,
+                desiredVelocity.y
+            );
+
+        if (
+            velocityNorm >
+            DRONE_MAX_SPEED
+        ) {
+
+            desiredVelocity.x =
+                desiredVelocity.x /
+                velocityNorm *
+                DRONE_MAX_SPEED;
+
+            desiredVelocity.y =
+                desiredVelocity.y /
+                velocityNorm *
+                DRONE_MAX_SPEED;
+
+        }
+
+
+        /* FINAL COLLISION GUARD */
+
+        const proposedPosition = {
+
+            x:
+                this.drone.x +
+                desiredVelocity.x *
+                dt,
+
+            y:
+                this.drone.y +
+                desiredVelocity.y *
+                dt
+
+        };
+
+
+        for (const obj of hazards) {
+
+            if (!obj.active)
+                continue;
+
+            const future =
+                predictedPosition(
+                    obj,
+                    dt
+                );
+
+            const futureDistance =
+                distance(
+                    proposedPosition,
+                    future
+                );
+
+            const minimumGap =
+                obj.radius + 16;
+
+            if (
+                futureDistance <
+                minimumGap
+            ) {
+
+                const away =
+                    normalize({
+                        x:
+                            proposedPosition.x -
+                            future.x,
+
+                        y:
+                            proposedPosition.y -
+                            future.y
+                    });
+
+                desiredVelocity = {
+
+                    x:
+                        away.x *
+                        this.speed *
+                        .5,
+
+                    y:
+                        away.y *
+                        this.speed *
+                        .5
+
+                };
+
+                this.status =
+                    "EMERGENCY GUARD";
+
+                this.action =
+                    "AVOID";
+
+                this.reason =
+                    "Final collision guard triggered sidestep bypass.";
+
+                this.addLog(
+                    `GUARD: Sidestep near ${obj.id}`
+                );
+
+                break;
+
+            }
+
+        }
+
+
+        this.velocity =
+            desiredVelocity;
+
+        this.drone.x +=
+            this.velocity.x *
+            dt;
+
+        this.drone.y +=
+            this.velocity.y *
+            dt;
+
+
+        this.drone.x =
+            clamp(
+                this.drone.x,
+                35,
+                MAP_RIGHT - 25
+            );
+
+        this.drone.y =
+            clamp(
+                this.drone.y,
+                35,
+                HEIGHT - 55
+            );
+
+
+        if (
+            Math.hypot(
+                this.velocity.x,
+                this.velocity.y
+            ) > .1
+        ) {
+
+            this.heading =
+                Math.atan2(
+                    this.velocity.y,
+                    this.velocity.x
+                );
+
+        }
+
+
+        if (
+            distance(
+                this.drone,
+                target
+            ) < 25
+        ) {
+
+            if (
+                this.currentTarget <
+                this.route.length - 1
+            ) {
+
+                this.currentTarget++;
+
+                this.addLog(
+                    `NAV: Waypoint ${this.currentTarget} reached`
+                );
+
+            }
+
+        }
+
+
+        const remaining = [
+            {...this.drone},
+            ...this.route
+                .slice(this.currentTarget)
+                .map(p => ({...p}))
+        ];
+
+        this.routeLength =
+            this.calculateRouteLength(
+                remaining
+            );
+
+        const effectiveSpeed =
+            Math.max(
+                1,
+                Math.hypot(
+                    this.velocity.x,
+                    this.velocity.y
+                )
+            );
+
+        this.routeETA =
+            this.routeLength /
+            effectiveSpeed;
+
+    }
+
+
+    reset() {
+
+        this.drone =
+            {...this.start};
+
+        this.velocity = {
+            x: 0,
+            y: 0
+        };
+
+        this.route = [
+
+            {...this.start},
+
+            {x:250, y:520},
+
+            {x:390, y:380},
+
+            {x:530, y:250},
+
+            {...this.destination}
+
+        ];
+
+        this.currentTarget = 1;
+
+        this.routeMode =
+            "INITIAL";
+
+        this.replanCount = 0;
+
+        this.routeLength =
+            this.calculateRouteLength(
+                this.route
+            );
+
+        this.routeETA = 0;
+
+        this.status =
+            "FLY";
+
+        this.action =
+            "FLY";
+
+        this.reason =
+            "Mission restarted.";
+
+        this.deliveryComplete =
+            false;
+
+        this.logs = [];
+
+        this.addLog(
+            "SYSTEM: Mission reset"
+        );
+
+        this.addLog(
+            "TRACKING: Dynamic object tracking ACTIVE"
+        );
+
+        this.addLog(
+            "NAVIGATION: Forward detour routing ACTIVE"
+        );
+
+    }
+
+}
+
+
+/* ============================================================
+   DRAWING
+   ============================================================ */
+
+function drawMap() {
+
+    ctx.fillStyle =
+        COLORS.bg;
+
+    ctx.fillRect(
+        0,
+        0,
+        WIDTH,
+        HEIGHT
+    );
+
+
+    /* GRID */
+
+    ctx.strokeStyle =
+        COLORS.grid;
+
+    ctx.lineWidth = 1;
+
+    for (
+        let x = 20;
+        x < MAP_RIGHT;
+        x += 40
+    ) {
+
+        ctx.beginPath();
+
+        ctx.moveTo(x, 0);
+
+        ctx.lineTo(x, HEIGHT);
+
+        ctx.stroke();
+
+    }
+
+    for (
+        let y = 20;
+        y < HEIGHT;
+        y += 40
+    ) {
+
+        ctx.beginPath();
+
+        ctx.moveTo(0, y);
+
+        ctx.lineTo(MAP_RIGHT, y);
+
+        ctx.stroke();
+
+    }
+
+
+    /* ROADS */
+
+    ctx.fillStyle =
+        COLORS.road;
+
+    ctx.fillRect(
+        40,
+        320,
+        810,
+        85
+    );
+
+    ctx.fillRect(
+        380,
+        35,
+        85,
+        645
+    );
+
+
+    ctx.strokeStyle =
+        COLORS.roadLine;
+
+    ctx.lineWidth = 2;
+
+    for (
+        let x = 50;
+        x < 850;
+        x += 60
+    ) {
+
+        ctx.beginPath();
+
+        ctx.moveTo(x, 362);
+
+        ctx.lineTo(
+            x + 30,
+            362
+        );
+
+        ctx.stroke();
+
+    }
+
+    for (
+        let y = 50;
+        y < 670;
+        y += 55
+    ) {
+
+        ctx.beginPath();
+
+        ctx.moveTo(422, y);
+
+        ctx.lineTo(
+            422,
+            y + 25
+        );
+
+        ctx.stroke();
+
+    }
+
+
+    /* BUILDINGS */
+
+    for (const b of buildings) {
+
+        ctx.fillStyle =
+            COLORS.grass;
+
+        ctx.fillRect(
+            b.x - 8,
+            b.y - 8,
+            b.w + 16,
+            b.h + 16
+        );
+
+        ctx.fillStyle =
+            COLORS.house;
+
+        ctx.fillRect(
+            b.x,
+            b.y,
+            b.w,
+            b.h
+        );
+
+        ctx.strokeStyle =
+            COLORS.white;
+
+        ctx.lineWidth = 2;
+
+        ctx.strokeRect(
+            b.x,
+            b.y,
+            b.w,
+            b.h
+        );
+
+        ctx.fillStyle =
+            COLORS.roof;
+
+        ctx.fillRect(
+            b.x + 12,
+            b.y + 12,
+            b.w - 24,
+            b.h - 24
+        );
+
+        ctx.fillStyle =
+            COLORS.white;
+
+        ctx.font =
+            "11px Arial";
+
+        ctx.fillText(
+            b.name,
+            b.x + 15,
+            b.y + b.h - 15
+        );
+
+    }
+
+}
+
+
+function drawRoute(ai) {
+
+    /* DIRECT REFERENCE */
+
+    ctx.strokeStyle =
+        "rgba(150,160,170,.25)";
+
+    ctx.lineWidth = 1;
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        ai.drone.x,
+        ai.drone.y
+    );
+
+    ctx.lineTo(
+        ai.destination.x,
+        ai.destination.y
+    );
+
+    ctx.stroke();
+
+
+    /* ACTIVE ROUTE */
+
+    ctx.strokeStyle =
+        (
+            ai.status === "REROUTING" ||
+            ai.status === "EMERGENCY GUARD"
+        )
+            ? COLORS.yellow
+            : COLORS.green;
+
+    ctx.lineWidth = 4;
+
+    for (
+        let i = 0;
+        i < ai.route.length - 1;
+        i++
+    ) {
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            ai.route[i].x,
+            ai.route[i].y
+        );
+
+        ctx.lineTo(
+            ai.route[i + 1].x,
+            ai.route[i + 1].y
+        );
+
+        ctx.stroke();
+
+    }
+
+
+    /* WAYPOINTS */
+
+    for (
+        let i = 0;
+        i < ai.route.length;
+        i++
+    ) {
+
+        const p =
+            ai.route[i];
+
+        ctx.fillStyle =
+            COLORS.cyan;
+
+        ctx.beginPath();
+
+        ctx.arc(
+            p.x,
+            p.y,
+            5,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.fill();
+
+        if (
+            i > 0 &&
+            i < ai.route.length - 1
+        ) {
+
+            ctx.fillStyle =
+                COLORS.cyan;
+
+            ctx.font =
+                "10px Arial";
+
+            ctx.fillText(
+                `WP${i}`,
+                p.x + 8,
+                p.y - 8
+            );
+
+        }
+
+    }
+
+}
+
+
+function getRiskColor(risk) {
+
+    if (risk >= 75)
+        return COLORS.red;
+
+    if (risk >= 45)
+        return COLORS.orange;
+
+    if (risk >= 25)
+        return COLORS.yellow;
+
+    return COLORS.green;
+
+}
+
+
+function drawHazard(obj, ai) {
+
+    if (!obj.active)
+        return;
+
+    const analysis =
+        ai.predictInteraction(obj);
+
+    const risk =
+        ai.calculateRisk(
+            obj,
+            analysis
+        );
+
+    const color =
+        getRiskColor(risk);
+
+    const radius =
+        SAFETY_RADIUS +
+        obj.radius;
+
+
+    /* SAFETY RING */
+
+    ctx.strokeStyle =
+        color;
+
+    ctx.lineWidth = 1;
+
+    ctx.beginPath();
+
+    ctx.arc(
+        obj.x,
+        obj.y,
+        radius,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.stroke();
+
+
+    /* OBJECT */
+
+    if (obj.type === "CAR") {
+
+        ctx.fillStyle =
+            COLORS.orange;
+
+        ctx.fillRect(
+            obj.x - 25,
+            obj.y - 13,
+            50,
+            26
+        );
+
+        ctx.fillStyle =
+            "#46505a";
+
+        ctx.fillRect(
+            obj.x - 18,
+            obj.y - 9,
+            36,
+            18
+        );
+
+
+        const dir =
+            normalize({
+                x: obj.vx,
+                y: obj.vy
+            });
+
+        ctx.strokeStyle =
+            COLORS.white;
+
+        ctx.lineWidth = 2;
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            obj.x,
+            obj.y
+        );
+
+        ctx.lineTo(
+            obj.x + dir.x * 35,
+            obj.y + dir.y * 35
+        );
+
+        ctx.stroke();
+
+    }
+
+
+    else if (
+        obj.type === "PEDESTRIAN"
+    ) {
+
+        ctx.fillStyle =
+            COLORS.purple;
+
+        ctx.beginPath();
+
+        ctx.arc(
+            obj.x,
+            obj.y,
+            9,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.fill();
+
+        ctx.strokeStyle =
+            COLORS.purple;
+
+        ctx.lineWidth = 3;
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            obj.x,
+            obj.y + 8
+        );
+
+        ctx.lineTo(
+            obj.x,
+            obj.y + 20
+        );
+
+        ctx.stroke();
+
+    }
+
+
+    else if (
+        obj.type === "ANIMAL"
+    ) {
+
+        ctx.fillStyle =
+            COLORS.pink;
+
+        ctx.beginPath();
+
+        ctx.ellipse(
+            obj.x,
+            obj.y,
+            18,
+            10,
+            0,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.fill();
+
+        ctx.beginPath();
+
+        ctx.arc(
+            obj.x + 13,
+            obj.y - 5,
+            5,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.fill();
+
+    }
+
+
+    else if (
+        obj.type === "BIRD"
+    ) {
+
+        ctx.strokeStyle =
+            COLORS.red;
+
+        ctx.lineWidth = 3;
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            obj.x - 15,
+            obj.y - 7
+        );
+
+        ctx.lineTo(
+            obj.x,
+            obj.y
+        );
+
+        ctx.lineTo(
+            obj.x + 15,
+            obj.y - 7
+        );
+
+        ctx.stroke();
+
+        ctx.fillStyle =
+            COLORS.red;
+
+        ctx.beginPath();
+
+        ctx.arc(
+            obj.x,
+            obj.y,
+            5,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.fill();
+
+    }
+
+
+    /* LABEL */
+
+    ctx.fillStyle =
+        color;
+
+    ctx.font =
+        "10px Arial";
+
+    ctx.fillText(
+        `${obj.id} ${Math.hypot(obj.vx,obj.vy).toFixed(0)}px/s`,
+        obj.x - 55,
+        obj.y - radius - 8
+    );
+
+
+    /* PREDICTED POSITION */
+
+    const predicted =
+        predictedPosition(
+            obj,
+            PREDICTION_TIME
+        );
+
+    ctx.strokeStyle =
+        color;
+
+    ctx.lineWidth = 1;
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        obj.x,
+        obj.y
+    );
+
+    ctx.lineTo(
+        predicted.x,
+        predicted.y
+    );
+
+    ctx.stroke();
+
+    ctx.beginPath();
+
+    ctx.arc(
+        predicted.x,
+        predicted.y,
+        5,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.stroke();
+
+}
+
+
+function drawDrone(ai) {
+
+    const color =
+        ai.status === "EMERGENCY GUARD"
+            ? COLORS.red
+            : (
+                ai.status === "WAIT" ||
+                ai.status === "REROUTING"
+                    ? COLORS.yellow
+                    : COLORS.cyan
+            );
+
+
+    /* SAFETY CIRCLE */
+
+    ctx.strokeStyle =
+        color;
+
+    ctx.lineWidth = 1;
+
+    ctx.beginPath();
+
+    ctx.arc(
+        ai.drone.x,
+        ai.drone.y,
+        SAFETY_RADIUS,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.stroke();
+
+
+    /* DRONE */
+
+    ctx.fillStyle =
+        color;
+
+    ctx.beginPath();
+
+    ctx.arc(
+        ai.drone.x,
+        ai.drone.y,
+        13,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fill();
+
+
+    /* X FRAME */
+
+    ctx.strokeStyle =
+        COLORS.white;
+
+    ctx.lineWidth = 2;
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        ai.drone.x - 18,
+        ai.drone.y - 12
+    );
+
+    ctx.lineTo(
+        ai.drone.x + 18,
+        ai.drone.y + 12
+    );
+
+    ctx.moveTo(
+        ai.drone.x - 18,
+        ai.drone.y + 12
+    );
+
+    ctx.lineTo(
+        ai.drone.x + 18,
+        ai.drone.y - 12
+    );
+
+    ctx.stroke();
+
+
+    /* HEADING */
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        ai.drone.x,
+        ai.drone.y
+    );
+
+    ctx.lineTo(
+        ai.drone.x +
+        Math.cos(ai.heading) *
+        32,
+
+        ai.drone.y +
+        Math.sin(ai.heading) *
+        32
+    );
+
+    ctx.stroke();
+
+
+    ctx.fillStyle =
+        COLORS.white;
+
+    ctx.font =
+        "11px Arial";
+
+    ctx.fillText(
+        "AI DRONE",
+        ai.drone.x - 32,
+        ai.drone.y - 25
+    );
+
+}
+
+
+function drawDestination(ai) {
+
+    ctx.strokeStyle =
+        COLORS.green;
+
+    ctx.lineWidth = 2;
+
+    ctx.beginPath();
+
+    ctx.arc(
+        ai.destination.x,
+        ai.destination.y,
+        24,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.stroke();
+
+    ctx.fillStyle =
+        COLORS.green;
+
+    ctx.beginPath();
+
+    ctx.arc(
+        ai.destination.x,
+        ai.destination.y,
+        8,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fill();
+
+    ctx.font =
+        "11px Arial";
+
+    ctx.fillText(
+        "DELIVERY ZONE",
+        ai.destination.x - 55,
+        ai.destination.y + 42
+    );
+
+}
+
+
+/* ============================================================
+   PANEL DRAWING
+   ============================================================ */
+
+function drawPanel() {
+
+    ctx.fillStyle =
+        "rgba(16,22,29,.96)";
+
+    ctx.fillRect(
+        MAP_RIGHT,
+        0,
+        WIDTH - MAP_RIGHT,
+        HEIGHT
+    );
+
+    ctx.strokeStyle =
+        "#232f3b";
+
+    ctx.lineWidth = 2;
+
+    ctx.strokeRect(
+        MAP_RIGHT,
+        0,
+        WIDTH - MAP_RIGHT,
+        HEIGHT
+    );
+
+}
+
+
+function drawCanvasHUD(ai) {
+
+    drawPanel();
+
+    const x =
+        MAP_RIGHT + 18;
+
+
+    ctx.fillStyle =
+        COLORS.cyan;
+
+    ctx.font =
+        "bold 16px Arial";
+
+    ctx.fillText(
+        "HAZARDGUARD DRONE",
+        x,
+        32
+    );
+
+    ctx.fillStyle =
+        COLORS.gray;
+
+    ctx.font =
+        "10px Arial";
+
+    ctx.fillText(
+        "MOTION & RISK SAFETY ENGINE",
+        x,
+        51
+    );
+
+
+    const statusColor =
+        getRiskColor(
+            ai.riskScore
+        );
+
+
+    ctx.fillStyle =
+        statusColor;
+
+    ctx.font =
+        "bold 13px Arial";
+
+    ctx.fillText(
+        `STATUS: ${ai.status}`,
+        x,
+        82
+    );
+
+    ctx.fillText(
+        `ACTION: ${ai.action}`,
+        x,
+        105
+    );
+
+
+    /* RISK */
+
+    sectionTitle(
+        "RISK ANALYSIS",
+        x,
+        140
+    );
+
+    textLine(
+        `LEVEL: ${ai.riskLevel}`,
+        x,
+        163,
+        statusColor
+    );
+
+    textLine(
+        `SCORE: ${ai.riskScore.toFixed(0)}/100`,
+        x,
+        183
+    );
+
+
+    /* TRACKING */
+
+    sectionTitle(
+        "THREAT TRACKING",
+        x,
+        218
+    );
+
+    textLine(
+        `OBJECT: ${ai.threatId}`,
+        x,
+        241
+    );
+
+    textLine(
+        `TYPE: ${ai.threatType}`,
+        x,
+        260
+    );
+
+    textLine(
+        `DISTANCE: ${ai.currentDistance.toFixed(1)}`,
+        x,
+        279
+    );
+
+    textLine(
+        `PREDICTED: ${ai.predictedDistance.toFixed(1)}`,
+        x,
+        298
+    );
+
+
+    /* MOTION */
+
+    sectionTitle(
+        "MOTION ANALYSIS",
+        x,
+        333
+    );
+
+    textLine(
+        `CLOSING SPEED: ${ai.closingSpeed.toFixed(1)}`,
+        x,
+        356
+    );
+
+    textLine(
+        `RELATIVE SPEED: ${ai.relativeSpeed.toFixed(1)}`,
+        x,
+        375
+    );
+
+    textLine(
+        ai.ttc >= 999
+            ? "TTC: NO CONFLICT"
+            : `TTC: ${ai.ttc.toFixed(2)} sec`,
+        x,
+        394,
+        ai.ttc < 2
+            ? COLORS.red
+            : COLORS.white
+    );
+
+
+    /* ROUTE */
+
+    sectionTitle(
+        "ROUTE INTELLIGENCE",
+        x,
+        429
+    );
+
+    textLine(
+        `MODE: ${ai.routeMode}`,
+        x,
+        452
+    );
+
+    textLine(
+        `CONFLICT: ${ai.routeConflict ? "YES" : "NO"}`,
+        x,
+        471,
+        ai.routeConflict
+            ? COLORS.red
+            : COLORS.green
+    );
+
+    textLine(
+        `REPLANS: ${ai.replanCount}`,
+        x,
+        490
+    );
+
+
+    /* DECISION */
+
+    sectionTitle(
+        "SAFETY DECISION",
+        x,
+        525
+    );
+
+    const words =
+        wrapText(
+            ai.reason,
+            43
+        );
+
+    for (
+        let i = 0;
+        i < Math.min(words.length, 4);
+        i++
+    ) {
+
+        textLine(
+            words[i],
+            x,
+            548 + i * 17,
+            COLORS.white,
+            10
+        );
+
+    }
+
+
+    /* GPS */
+
+    textLine(
+        `GPS: ${ai.drone.x.toFixed(0)}, ${ai.drone.y.toFixed(0)}`,
+        x,
+        630,
+        COLORS.gray,
+        9
+    );
+
+}
+
+
+function sectionTitle(
+    text,
+    x,
+    y
+) {
+
+    ctx.fillStyle =
+        COLORS.cyan;
+
+    ctx.font =
+        "bold 10px Arial";
+
+    ctx.fillText(
+        text,
+        x,
+        y
+    );
+
+}
+
+
+function textLine(
+    text,
+    x,
+    y,
+    color = COLORS.white,
+    size = 10
+) {
+
+    ctx.fillStyle =
+        color;
+
+    ctx.font =
+        `${size}px Arial`;
+
+    ctx.fillText(
+        text,
+        x,
+        y
+    );
+
+}
+
+
+function wrapText(
+    text,
+    max
+) {
+
+    const words =
+        text.split(" ");
+
+    const lines = [];
+
+    let current = "";
+
+    for (const word of words) {
+
+        if (
+            (current + " " + word).trim().length >
+            max
+        ) {
+
+            lines.push(
+                current.trim()
+            );
+
+            current = word;
+
+        } else {
+
+            current +=
+                " " + word;
+
+        }
+
+    }
+
+    if (current.trim()) {
+
+        lines.push(
+            current.trim()
+        );
+
+    }
+
+    return lines;
+
+}
+
+
+/* ============================================================
+   DOM UI
+   ============================================================ */
+
+function setText(id, value) {
+
+    const element =
+        document.getElementById(id);
+
+    if (element)
+        element.textContent = value;
+
+}
+
+
+function updateUI(ai, battery, signal) {
+
+    setText(
+        "statusMain",
+        ai.status
+    );
+
+    setText(
+        "statusAction",
+        ai.action
+    );
+
+    setText(
+        "riskLevel",
+        ai.riskLevel
+    );
+
+    setText(
+        "riskScore",
+        `${ai.riskScore.toFixed(0)} / 100`
+    );
+
+    setText(
+        "threatId",
+        ai.threatId
+    );
+
+    setText(
+        "threatType",
+        ai.threatType
+    );
+
+    setText(
+        "currentDistance",
+        ai.currentDistance.toFixed(1)
+    );
+
+    setText(
+        "predictedDistance",
+        ai.predictedDistance.toFixed(1)
+    );
+
+    setText(
+        "closingSpeed",
+        ai.closingSpeed.toFixed(1)
+    );
+
+    setText(
+        "relativeSpeed",
+        ai.relativeSpeed.toFixed(1)
+    );
+
+    setText(
+        "ttc",
+        ai.ttc >= 999
+            ? "NO CONFLICT"
+            : `${ai.ttc.toFixed(2)} sec`
+    );
+
+    setText(
+        "routeConflict",
+        ai.routeConflict
+            ? "YES"
+            : "NO"
+    );
+
+    setText(
+        "routeMode",
+        ai.routeMode
+    );
+
+    setText(
+        "replans",
+        ai.replanCount
+    );
+
+    setText(
+        "gps",
+        `${ai.drone.x.toFixed(0)}, ${ai.drone.y.toFixed(0)}`
+    );
+
+    setText(
+        "eta",
+        ai.deliveryComplete
+            ? "DONE"
+            : `${ai.routeETA.toFixed(1)} s`
+    );
+
+    setText(
+        "battery",
+        `${battery.toFixed(0)}%`
+    );
+
+    setText(
+        "signal",
+        `${signal.toFixed(0)}%`
+    );
+
+    setText(
+        "droneSpeed",
+        `${Math.hypot(
+            ai.velocity.x,
+            ai.velocity.y
+        ).toFixed(1)}`
+    );
+
+    setText(
+        "mission",
+        ai.deliveryComplete
+            ? "COMPLETED"
+            : "DELIVERY"
+    );
+
+    setText(
+        "reason",
+        ai.reason
+    );
+
+
+    const log =
+        document.getElementById(
+            "eventLog"
+        );
+
+    log.innerHTML =
+        ai.logs
+            .map(
+                item =>
+                    `<div class="log-entry">${item}</div>`
+            )
+            .join("");
+
+
+    /* STATUS COLOR */
+
+    const statusElement =
+        document.getElementById(
+            "statusMain"
+        );
+
+    let color =
+        "#31e36f";
+
+    if (
+        ai.status === "WAIT"
+    ) {
+
+        color =
+            "#ffd329";
+
+    }
+
+    if (
+        ai.status === "REROUTING"
+    ) {
+
+        color =
+            "#ffd329";
+
+    }
+
+    if (
+        ai.status === "EMERGENCY GUARD"
+    ) {
+
+        color =
+            "#ff4254";
+
+    }
+
+    if (
+        ai.status === "DELIVERED"
+    ) {
+
+        color =
+            "#31e36f";
+
+    }
+
+    statusElement.style.color =
+        color;
+
+}
+
+
+/* ============================================================
+   SIMULATION STATE
+   ============================================================ */
+
+let ai =
+    new SafetyAI(
+        {
+            x: 100,
+            y: 610
+        },
+        {
+            x: 800,
+            y: 125
+        }
+    );
+
+let hazards =
+    createHazards();
+
+let running = true;
+
+let lastTime =
+    performance.now();
+
+let elapsed =
+    0;
+
+let battery = 100;
+
+let signal = 100;
+
+
+/* ============================================================
+   HAZARD MOVEMENT
+   ============================================================ */
+
+function updateHazards(dt) {
+
+    elapsed += dt;
+
+
+    for (const obj of hazards) {
+
+        if (
+            obj.type === "BIRD"
+        ) {
+
+            if (
+                !obj.spawned &&
+                elapsed > obj.spawnDelay
+            ) {
+
+                obj.active = true;
+
+                obj.spawned = true;
+
+                ai.addLog(
+                    "RADAR: BIRD-01 entered monitoring area"
+                );
+
+            }
+
+            if (!obj.active)
+                continue;
+
+        }
+
+
+        obj.x +=
+            obj.vx * dt;
+
+        obj.y +=
+            obj.vy * dt;
+
+
+        if (
+            obj.type === "CAR"
+        ) {
+
+            if (obj.x < 70) {
+
+                obj.x = 70;
+
+                obj.vx =
+                    Math.abs(obj.vx);
+
+            }
+
+            else if (
+                obj.x >
+                MAP_RIGHT - 80
+            ) {
+
+                obj.x =
+                    MAP_RIGHT - 80;
+
+                obj.vx =
+                    -Math.abs(obj.vx);
+
+            }
+
+        }
+
+
+        else if (
+            obj.type === "PEDESTRIAN"
+        ) {
+
+            if (obj.y < 210) {
+
+                obj.y = 210;
+
+                obj.vy =
+                    Math.abs(obj.vy);
+
+            }
+
+            else if (
+                obj.y > 330
+            ) {
+
+                obj.y = 330;
+
+                obj.vy =
+                    -Math.abs(obj.vy);
+
+            }
+
+        }
+
+
+        else if (
+            obj.type === "ANIMAL"
+        ) {
+
+            if (obj.x < 570) {
+
+                obj.x = 570;
+
+                obj.vx =
+                    Math.abs(obj.vx);
+
+            }
+
+            else if (
+                obj.x > 800
+            ) {
+
+                obj.x = 800;
+
+                obj.vx =
+                    -Math.abs(obj.vx);
+
+            }
+
+            if (obj.y < 430) {
+
+                obj.y = 430;
+
+                obj.vy =
+                    Math.abs(obj.vy);
+
+            }
+
+            else if (
+                obj.y > 580
+            ) {
+
+                obj.y = 580;
+
+                obj.vy =
+                    -Math.abs(obj.vy);
+
+            }
+
+        }
+
+
+        else if (
+            obj.type === "BIRD"
+        ) {
+
+            if (
+                obj.x < -40 ||
+                obj.y > HEIGHT + 40 ||
+                obj.y < -40
+            ) {
+
+                obj.active = false;
+
+            }
+
+        }
+
+    }
+
+}
+
+
+/* ============================================================
+   BATTERY / SIGNAL
+   ============================================================ */
+
+function updateSystemHealth(dt) {
+
+    if (
+        !ai.deliveryComplete
+    ) {
+
+        battery =
+            Math.max(
+                0,
+                battery -
+                dt * 0.18
+            );
+
+        const distanceFromCenter =
+            Math.hypot(
+                ai.drone.x - 440,
+                ai.drone.y - 360
+            );
+
+        signal =
+            clamp(
+                100 -
+                Math.max(
+                    0,
+                    distanceFromCenter - 280
+                ) * .035,
+                72,
+                100
+            );
+
+    }
+
+}
+
+
+/* ============================================================
+   DRAW FRAME
+   ============================================================ */
+
+function render() {
+
+    drawMap();
+
+    drawRoute(ai);
+
+    drawDestination(ai);
+
+    for (
+        const obj of hazards
+    ) {
+
+        drawHazard(
+            obj,
+            ai
+        );
+
+    }
+
+    drawDrone(ai);
+
+    drawCanvasHUD(ai);
+
+}
+
+
+/* ============================================================
+   MAIN LOOP
+   ============================================================ */
+
+function loop(now) {
+
+    const dt =
+        Math.min(
+            (now - lastTime) / 1000,
+            0.05
+        );
+
+    lastTime =
+        now;
+
+
+    if (running) {
+
+        updateHazards(dt);
+
+        ai.update(
+            hazards,
+            dt
+        );
+
+        updateSystemHealth(
+            dt
+        );
+
+        updateUI(
+            ai,
+            battery,
+            signal
+        );
+
+    }
+
+
+    render();
+
+    requestAnimationFrame(
+        loop
+    );
+
+}
+
+
+requestAnimationFrame(
+    loop
+);
+
+
+/* ============================================================
+   CONTROLS
+   ============================================================ */
+
+document
+    .getElementById("pauseBtn")
+    .addEventListener(
+        "click",
+        function() {
+
+            running =
+                !running;
+
+            this.textContent =
+                running
+                    ? "Pause"
+                    : "Resume";
+
+            if (running) {
+
+                ai.addLog(
+                    "SYSTEM: Simulation RESUMED"
+                );
+
+            } else {
+
+                ai.addLog(
+                    "SYSTEM: Simulation PAUSED"
+                );
+
+            }
+
+            updateUI(
+                ai,
+                battery,
+                signal
+            );
+
+        }
+    );
+
+
+document
+    .getElementById("resetBtn")
+    .addEventListener(
+        "click",
+        function() {
+
+            ai =
+                new SafetyAI(
+                    {
+                        x: 100,
+                        y: 610
+                    },
+                    {
+                        x: 800,
+                        y: 125
+                    }
+                );
+
+            hazards =
+                createHazards();
+
+            elapsed = 0;
+
+            battery = 100;
+
+            signal = 100;
+
+            running = true;
+
+            document
+                .getElementById(
+                    "pauseBtn"
+                )
+                .textContent = "Pause";
+
+        }
+    );
+
+
+document
+    .getElementById("rerouteBtn")
+    .addEventListener(
+        "click",
+        function() {
+
+            ai.chooseRoute(
+                hazards,
+                true
+            );
+
+            ai.addLog(
+                `USER: Forced route evaluation = ${ai.routeMode}`
+            );
+
+            updateUI(
+                ai,
+                battery,
+                signal
+            );
+
+        }
+    );
+
+
+/* ============================================================
+   KEYBOARD CONTROLS
+   ============================================================ */
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (
+            event.code === "Space"
+        ) {
+
+            event.preventDefault();
+
+            document
+                .getElementById(
+                    "pauseBtn"
+                )
+                .click();
+
+        }
+
+
+        if (
+            event.key.toLowerCase() === "r"
+        ) {
+
+            document
+                .getElementById(
+                    "resetBtn"
+                )
+                .click();
+
+        }
+
+
+        if (
+            event.key.toLowerCase() === "a"
+        ) {
+
+            document
+                .getElementById(
+                    "rerouteBtn"
+                )
+                .click();
+
+        }
+
+    }
+);
+
+</script>
+
+</body>
+</html>
