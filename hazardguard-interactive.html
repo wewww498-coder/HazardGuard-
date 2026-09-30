@@ -428,11 +428,34 @@ hazards.forEach(h=>{if(!h.active)return;let color=h.type==="car"?"#ff5c7a":h.typ
 ctx.fillStyle="#4cc9f0";ctx.beginPath();ctx.moveTo(drone.x,drone.y-14);ctx.lineTo(drone.x+17,drone.y);ctx.lineTo(drone.x,drone.y+14);ctx.lineTo(drone.x-17,drone.y);ctx.closePath();ctx.fill();ctx.strokeStyle="#dff8ff";ctx.stroke();
 if(done){ctx.fillStyle="rgba(3,9,19,.78)";ctx.fillRect(0,0,W,H);ctx.textAlign="center";ctx.fillStyle="#42e695";ctx.font="bold 38px Arial";ctx.fillText("DELIVERY COMPLETED",W/2,H/2-15);ctx.fillStyle="#fff";ctx.font="18px Arial";ctx.fillText("Final safety recheck passed",W/2,H/2+25)}
 }
+function analyze(){
+  const r=analyzeRoute(routeName);
+  return {
+    level:decisionLevel,
+    action:decisionAction,
+    h:r?r.h:null,
+    d:r?r.d:Infinity,
+    pred:r?r.predictedMin:Infinity,
+    closing:r?r.closing:0,
+    rel:r?r.rel:0,
+    ttc:r?r.ttc:Infinity,
+    risk:r?r.risk:0
+  };
+}
 function ui(){const a=analyze();const st=document.getElementById("status");st.textContent=a.level;st.className="status "+a.level.toLowerCase();document.getElementById("action").textContent=a.action;document.getElementById("risk").textContent=Math.round(a.risk);document.getElementById("riskfill").style.width=a.risk+"%";document.getElementById("riskfill").style.background=a.level==="STOP"?"var(--red)":a.level==="WAIT"?"var(--yellow)":"var(--green)";document.getElementById("threat").textContent=a.h?a.h.id:"None";document.getElementById("dist").textContent=a.h?Math.round(a.d)+" px":"—";document.getElementById("pred").textContent=a.h?Math.round(a.pred)+" px":"—";document.getElementById("close").textContent=a.h?Math.round(a.closing)+" px/s":"—";document.getElementById("rel").textContent=a.h?Math.round(a.rel)+" px/s":"—";document.getElementById("ttc").textContent=a.h?(a.ttc>99?"∞":a.ttc.toFixed(1)+" s"):"—";document.getElementById("route").textContent=routeName;document.getElementById("replans").textContent=replans;document.getElementById("pause").textContent=paused?"Resume":"Pause";document.getElementById("speed").textContent="Speed ×"+speedMul}
 function frame(now){const dt=Math.min(.035,(now-last)/1000);last=now;if(!paused&&!done)update(dt);draw();ui();requestAnimationFrame(frame)}
 document.getElementById("pause").onclick=()=>{paused=!paused;logMsg(paused?"Simulation paused.":"Simulation resumed.")};
 document.getElementById("reset").onclick=reset;
-document.getElementById("reroute").onclick=()=>{forceRoute=true;logMsg("Manual reroute requested.")};
+document.getElementById("reroute").onclick=()=>{
+  const best=chooseSafeRoute();
+  forceRoute=true;
+  if(best&&best.name!==routeName){
+    changeRoute(best.name,"manual reroute requested");
+    setDecision("WAIT","REROUTE","manual route change");
+  }else{
+    logMsg("Manual reroute requested; current route retained because no safer alternative is available.");
+  }
+};
 document.getElementById("speed").onclick=()=>{speedMul=speedMul===1?1.5:speedMul===1.5?0.6:1;};
 document.addEventListener("keydown",e=>{if(e.code==="Space"){e.preventDefault();document.getElementById("pause").click()}if(e.key.toLowerCase()==="r")reset();if(e.key.toLowerCase()==="a")document.getElementById("reroute").click()});
 const T={en:{back:"← Back to Project",badge:"INTERACTIVE SOFTWARE SIMULATION · PROOF OF CONCEPT",intro:"Explore how distance, movement, predicted conflict and route safety can influence a delivery decision.",status:"SAFETY STATUS",analysis:"LIVE ANALYSIS",controls:"CONTROLS",log:"EVENT LOG",legend:"OBJECTS",note:"Simulation only. This browser prototype demonstrates the proposed safety workflow; it is not a deployed autonomous drone system.",pause:"Pause",resume:"Resume"},ar:{back:"← العودة للمشروع",badge:"محاكاة برمجية تفاعلية · إثبات مفهوم",intro:"استكشفي كيف تؤثر المسافة والحركة والتعارض المتوقع وسلامة المسار في قرار التوصيل.",status:"حالة السلامة",analysis:"التحليل المباشر",controls:"التحكم",log:"سجل الأحداث",legend:"العناصر",note:"محاكاة فقط. يوضح هذا النموذج البرمجي سير عمل السلامة المقترح، ولا يمثل نظام درون ذاتي التشغيل منشورًا.",pause:"إيقاف مؤقت",resume:"استئناف"}};
