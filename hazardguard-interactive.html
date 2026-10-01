@@ -41,6 +41,13 @@ let decisionLevel="SAFE",decisionAction="FLY";
 let waitSince=0,safeSince=0,lastLoggedDecision="";
 let routeLockUntil=0;
 let routePlan=[],routeIndex=0;
+const INITIAL_HAZARDS=[
+  {x:180,y:345,vx:48,vy:0},
+  {x:760,y:360,vx:-40,vy:0},
+  {x:460,y:250,vx:0,vy:18},
+  {x:660,y:505,vx:-16,vy:-5},
+  {x:900,y:160,vx:-105,vy:23}
+];
 
 const drone={x:90,y:570,vx:0,vy:0,speed:120,r:11};
 const target={x:875,y:85};
@@ -62,11 +69,14 @@ function reset(){
   routeLockUntil=0;routePlan=[];routeIndex=0;
   hazards.forEach((h,i)=>{
     h.active=h.spawn?false:true;
-    h.x=[180,760,460,660,900][i];
-    h.y=[345,360,250,505,160][i];
+    h.x=INITIAL_HAZARDS[i].x;
+    h.y=INITIAL_HAZARDS[i].y;
+    h.vx=INITIAL_HAZARDS[i].vx;
+    h.vy=INITIAL_HAZARDS[i].vy;
   });
   rebuildPlan();
-  logMsg("Mission reset.");
+  document.getElementById("log").innerHTML="";
+  logMsg("Mission reset · initial safety check ready.");
 }
 
 function logMsg(s){
