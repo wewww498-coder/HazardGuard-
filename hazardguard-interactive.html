@@ -42,7 +42,7 @@ let waitSince=0,safeSince=0,lastLoggedDecision="";
 let routeLockUntil=0;
 let routePlan=[],routeIndex=0;
 
-const drone={x:90,y:570,vx:0,vy:0,speed:72,r:11};
+const drone={x:90,y:570,vx:0,vy:0,speed:120,r:11};
 const target={x:875,y:85};
 
 const hazards=[
@@ -190,7 +190,7 @@ function changeRoute(newRoute,reason){
   const old=routeName;
   routeName=newRoute;
   replans++;
-  routeLockUntil=simTime+.75;
+  routeLockUntil=simTime+.15;
   buildPlan(newRoute);
   logMsg("Route changed: "+old+" → "+newRoute+" · "+reason);
   return true;
@@ -389,8 +389,8 @@ function update(dt){
   let desired=drone.speed*speedMul;
 
   if(decisionLevel==="STOP")desired=0;
-  else if(decisionLevel==="WAIT"&&decisionAction==="WAIT")desired=4;
-  else if(decisionAction==="REROUTE")desired=drone.speed*.72*speedMul;
+  else if(decisionLevel==="WAIT"&&decisionAction==="WAIT")desired=0;
+  else if(decisionAction==="REROUTE")desired=drone.speed*.92*speedMul;
 
   const desiredVx=dx/len*desired;
   const desiredVy=dy/len*desired;
