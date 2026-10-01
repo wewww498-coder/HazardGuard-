@@ -120,7 +120,7 @@ function analyzeRoute(name){
       const p1=pts[s],p2=pts[s+1];
       currentMin=Math.min(currentMin,pointSeg(h.x,h.y,p1.x,p1.y,p2.x,p2.y)-h.r);
 
-      for(const t of [0.5,1,1.5,2,2.5]){
+      for(const t of [0.25,0.5,0.75,1,1.5,2,2.5,3]){
         const p=predictPoint(h,t);
         const d=pointSeg(p.x,p.y,p1.x,p1.y,p2.x,p2.y)-h.r;
         if(d<predictedMin){predictedMin=d;conflictTime=t}
@@ -358,12 +358,13 @@ function update(dt){
     h.x+=h.vx*dt*speedMul;
     h.y+=h.vy*dt*speedMul;
 
-    if(h.type==="car"&&(h.x<90||h.x>930))h.vx*=-1;
-    if(h.type==="animal"&&(h.x<520||h.x>800))h.vx*=-1;
-    if(h.type==="person"&&(h.y<170||h.y>330))h.vy*=-1;
-    if(h.type==="bird"&&(h.x<520||h.x>950))h.vx*=-1;
+    if(h.type==="car"){ if(h.x<90){h.x=90;h.vx=Math.abs(h.vx)} if(h.x>930){h.x=930;h.vx=-Math.abs(h.vx)} }
+    if(h.type==="animal"){ if(h.x<520){h.x=520;h.vx=Math.abs(h.vx)} if(h.x>800){h.x=800;h.vx=-Math.abs(h.vx)} }
+    if(h.type==="person"){ if(h.y<170){h.y=170;h.vy=Math.abs(h.vy)} if(h.y>330){h.y=330;h.vy=-Math.abs(h.vy)} }
+    if(h.type==="bird"){ if(h.x<520){h.x=520;h.vx=Math.abs(h.vx)} if(h.x>950){h.x=950;h.vx=-Math.abs(h.vx)} }
   });
 
+  // Re-evaluate after hazards move, so route decisions follow their current direction.
   evaluateDecision();
 
   /*
